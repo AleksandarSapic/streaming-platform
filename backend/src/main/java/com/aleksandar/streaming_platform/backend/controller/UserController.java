@@ -1,0 +1,113 @@
+package com.aleksandar.streaming_platform.backend.controller;
+
+import com.aleksandar.streaming_platform.backend.dto.CreateUserDto;
+import com.aleksandar.streaming_platform.backend.dto.UserDto;
+import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
+import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/v1/users")
+public class UserController {
+    
+    private final UserService userService;
+    
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+    
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserDto createUserDto) {
+        UserDto user = userService.createUser(createUserDto);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String name) {
+        List<UserDto> users = userService.searchUsersByName(name);
+        return ResponseEntity.ok(users);
+    }
+    
+    @GetMapping("/by-country")
+    public ResponseEntity<List<UserDto>> getUsersByCountry(@RequestParam String country) {
+        List<UserDto> users = userService.getUsersByCountry(country);
+        return ResponseEntity.ok(users);
+    }
+    
+    @GetMapping("/by-role")
+    public ResponseEntity<List<UserDto>> getUsersByRole(@RequestParam String roleName) {
+        List<UserDto> users = userService.getUsersByRoleName(roleName);
+        return ResponseEntity.ok(users);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDto userDto) {
+        if (!id.equals(userDto.id())) {
+            return ResponseEntity.badRequest().build();
+        }
+        UserDto updatedUser = userService.updateUser(userDto);
+        return ResponseEntity.ok(updatedUser);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @PostMapping("/{id}/assign-role")
+    public ResponseEntity<UserDto> assignRole(@PathVariable UUID id, @RequestParam UUID roleId) {
+        UserDto user = userService.assignUserRole(id, roleId);
+        return ResponseEntity.ok(user);
+    }
+    
+    @GetMapping("/{id}/watchlist")
+    public ResponseEntity<List<WatchlistDto>> getUserWatchlist(@PathVariable UUID id) {
+        List<WatchlistDto> watchlist = userService.getWatchlistByUserId(id);
+        return ResponseEntity.ok(watchlist);
+    }
+    
+    @PostMapping("/{id}/watchlist")
+    public ResponseEntity<Void> addToWatchlist(@PathVariable UUID id, @RequestParam UUID contentId) {
+        userService.addToWatchlist(id, contentId);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @DeleteMapping("/{id}/watchlist/{contentId}")
+    public ResponseEntity<Void> removeFromWatchlist(@PathVariable UUID id, @PathVariable UUID contentId) {
+        userService.removeFromWatchlist(id, contentId);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/{id}/recommendations")
+    public ResponseEntity<List<ContentDto>> getRecommendations(@PathVariable UUID id) {
+        List<ContentDto> recommendations = userService.getRecommendedContentForUser(id);
+        return ResponseEntity.ok(recommendations);
+    }
+    
+    @GetMapping("/{id}/watchlist/check")
+    public ResponseEntity<Boolean> isContentInWatchlist(@PathVariable UUID id, @RequestParam UUID contentId) {
+        boolean isInWatchlist = userService.isContentInUserWatchlist(id, contentId);
+        return ResponseEntity.ok(isInWatchlist);
+    }
+}
