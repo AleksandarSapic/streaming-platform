@@ -2,6 +2,9 @@ package com.aleksandar.streaming_platform.backend.service.impl;
 
 import com.aleksandar.streaming_platform.backend.dto.ContentTypeDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.DuplicateResourceException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.ContentType;
 import com.aleksandar.streaming_platform.backend.model.Content;
@@ -34,7 +37,7 @@ public class ContentTypeServiceImpl implements ContentTypeService {
     @Override
     public ContentTypeDto createContentType(ContentTypeDto contentTypeDto) {
         if (contentTypeRepository.existsByName(contentTypeDto.name())) {
-            throw new RuntimeException("Content type with name already exists: " + contentTypeDto.name());
+            throw new DuplicateResourceException("ContentType", "name", contentTypeDto.name());
         }
         
         ContentType contentType = new ContentType();
@@ -81,11 +84,11 @@ public class ContentTypeServiceImpl implements ContentTypeService {
     @Override
     public ContentTypeDto updateContentType(ContentTypeDto contentTypeDto) {
         ContentType existingContentType = contentTypeRepository.findById(contentTypeDto.id())
-                .orElseThrow(() -> new RuntimeException("Content type not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("ContentType", "id", contentTypeDto.id()));
         
         if (!existingContentType.getName().equals(contentTypeDto.name()) &&
             contentTypeRepository.existsByName(contentTypeDto.name())) {
-            throw new RuntimeException("Content type with name already exists: " + contentTypeDto.name());
+            throw new DuplicateResourceException("ContentType", "name", contentTypeDto.name());
         }
         
         existingContentType.setName(contentTypeDto.name());
@@ -96,12 +99,12 @@ public class ContentTypeServiceImpl implements ContentTypeService {
     @Override
     public void deleteContentType(UUID id) {
         if (!contentTypeRepository.existsById(id)) {
-            throw new RuntimeException("Content type not found");
+            throw new ResourceNotFoundException("ContentType", "id", id);
         }
         
         Long contentCount = getContentCountByTypeId(id);
         if (contentCount > 0) {
-            throw new RuntimeException("Cannot delete content type. " + contentCount + " content items are assigned this type.");
+            throw new BusinessLogicException("Cannot delete content type. " + contentCount + " content items are assigned this type.");
         }
         
         contentTypeRepository.deleteById(id);

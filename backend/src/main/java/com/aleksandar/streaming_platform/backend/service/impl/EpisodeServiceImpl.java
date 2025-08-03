@@ -3,6 +3,8 @@ package com.aleksandar.streaming_platform.backend.service.impl;
 import com.aleksandar.streaming_platform.backend.dto.EpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.CreateEpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.Episode;
 import com.aleksandar.streaming_platform.backend.model.Content;
@@ -36,7 +38,7 @@ public class EpisodeServiceImpl implements EpisodeService {
     public EpisodeDto createEpisode(CreateEpisodeDto createEpisodeDto) {
         // Validate that content exists
         Content content = contentRepository.findById(createEpisodeDto.contentId())
-                .orElseThrow(() -> new RuntimeException("Content not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Content", "id", createEpisodeDto.contentId()));
         
         // Check if episode already exists
         Optional<Episode> existingEpisode = episodeRepository.findByContentIdAndSeasonNumberAndEpisodeNumber(
@@ -45,7 +47,7 @@ public class EpisodeServiceImpl implements EpisodeService {
                 createEpisodeDto.episodeNumber());
         
         if (existingEpisode.isPresent()) {
-            throw new RuntimeException("Episode already exists for this season and episode number");
+            throw new BusinessLogicException("Episode already exists for this season and episode number");
         }
         
         Episode episode = dtoMapper.toEpisodeEntity(createEpisodeDto);
@@ -100,7 +102,7 @@ public class EpisodeServiceImpl implements EpisodeService {
     @Override
     public EpisodeDto updateEpisode(EpisodeDto episodeDto) {
         Episode existingEpisode = episodeRepository.findById(episodeDto.id())
-                .orElseThrow(() -> new RuntimeException("Episode not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Episode", "id", episodeDto.id()));
         
         // Check if the new season/episode number conflicts with existing episodes
         if (!existingEpisode.getSeasonNumber().equals(episodeDto.seasonNumber()) || 
@@ -112,7 +114,7 @@ public class EpisodeServiceImpl implements EpisodeService {
                     episodeDto.episodeNumber());
             
             if (conflictingEpisode.isPresent()) {
-                throw new RuntimeException("Episode already exists for this season and episode number");
+                throw new BusinessLogicException("Episode already exists for this season and episode number");
             }
         }
         
@@ -132,7 +134,7 @@ public class EpisodeServiceImpl implements EpisodeService {
     @Override
     public void deleteEpisode(UUID id) {
         if (!episodeRepository.existsById(id)) {
-            throw new RuntimeException("Episode not found");
+            throw new ResourceNotFoundException("Episode", "id", id);
         }
         episodeRepository.deleteById(id);
     }
@@ -227,7 +229,7 @@ public class EpisodeServiceImpl implements EpisodeService {
     @Transactional(readOnly = true)
     public ContentDto getContentByEpisodeId(UUID episodeId) {
         Episode episode = episodeRepository.findById(episodeId)
-                .orElseThrow(() -> new RuntimeException("Episode not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Episode", "id", episodeId));
         
         return dtoMapper.toContentDto(episode.getContent());
     }

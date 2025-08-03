@@ -4,6 +4,8 @@ import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 import com.aleksandar.streaming_platform.backend.dto.CreateContentDto;
 import com.aleksandar.streaming_platform.backend.dto.EpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.GenreDto;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.Content;
 import com.aleksandar.streaming_platform.backend.model.ContentType;
@@ -56,7 +58,7 @@ public class ContentServiceImpl implements ContentService {
         
         // Set content type
         ContentType contentType = contentTypeRepository.findById(createContentDto.contentTypeId())
-                .orElseThrow(() -> new RuntimeException("Content type not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("ContentType", "id", createContentDto.contentTypeId()));
         content.setContentType(contentType);
         
         Content savedContent = contentRepository.save(content);
@@ -65,7 +67,7 @@ public class ContentServiceImpl implements ContentService {
         if (createContentDto.genreIds() != null && !createContentDto.genreIds().isEmpty()) {
             for (UUID genreId : createContentDto.genreIds()) {
                 Genre genre = genreRepository.findById(genreId)
-                        .orElseThrow(() -> new RuntimeException("Genre not found: " + genreId));
+                        .orElseThrow(() -> new ResourceNotFoundException("Genre", "id", genreId));
                 
                 ContentGenre contentGenre = new ContentGenre();
                 contentGenre.setContentId(savedContent.getId());
@@ -145,7 +147,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ContentDto updateContent(ContentDto contentDto) {
         Content existingContent = contentRepository.findById(contentDto.id())
-                .orElseThrow(() -> new RuntimeException("Content not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Content", "id", contentDto.id()));
         
         existingContent.setTitle(contentDto.title());
         existingContent.setDescription(contentDto.description());
@@ -158,7 +160,7 @@ public class ContentServiceImpl implements ContentService {
         
         if (contentDto.contentType() != null) {
             ContentType contentType = contentTypeRepository.findById(contentDto.contentType().id())
-                    .orElseThrow(() -> new RuntimeException("Content type not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("ContentType", "id", contentDto.contentType().id()));
             existingContent.setContentType(contentType);
         }
         
@@ -169,7 +171,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public void deleteContent(UUID id) {
         if (!contentRepository.existsById(id)) {
-            throw new RuntimeException("Content not found");
+            throw new ResourceNotFoundException("Content", "id", id);
         }
         contentRepository.deleteById(id);
     }
@@ -177,7 +179,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public ContentDto toggleContentAvailability(UUID contentId) {
         Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new RuntimeException("Content not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Content", "id", contentId));
         
         content.setAvailable(!content.isAvailable());
         Content savedContent = contentRepository.save(content);
@@ -204,13 +206,13 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public void addGenreToContent(UUID contentId, UUID genreId) {
         if (contentGenreRepository.existsByContentIdAndGenreId(contentId, genreId)) {
-            throw new RuntimeException("Genre already assigned to content");
+            throw new BusinessLogicException("Genre already assigned to content");
         }
         
         Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new RuntimeException("Content not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Content", "id", contentId));
         Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new RuntimeException("Genre not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Genre", "id", genreId));
         
         ContentGenre contentGenre = new ContentGenre();
         contentGenre.setContentId(contentId);
@@ -223,7 +225,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public void removeGenreFromContent(UUID contentId, UUID genreId) {
         if (!contentGenreRepository.existsByContentIdAndGenreId(contentId, genreId)) {
-            throw new RuntimeException("Genre not assigned to content");
+            throw new BusinessLogicException("Genre not assigned to content");
         }
         contentGenreRepository.deleteByContentIdAndGenreId(contentId, genreId);
     }

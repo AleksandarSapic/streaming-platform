@@ -2,6 +2,9 @@ package com.aleksandar.streaming_platform.backend.service.impl;
 
 import com.aleksandar.streaming_platform.backend.dto.GenreDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.DuplicateResourceException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.Genre;
 import com.aleksandar.streaming_platform.backend.model.Content;
@@ -40,7 +43,7 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public GenreDto createGenre(GenreDto genreDto) {
         if (genreRepository.existsByName(genreDto.name())) {
-            throw new RuntimeException("Genre with name already exists: " + genreDto.name());
+            throw new DuplicateResourceException("Genre", "name", genreDto.name());
         }
         
         Genre genre = new Genre();
@@ -87,12 +90,12 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public GenreDto updateGenre(GenreDto genreDto) {
         Genre existingGenre = genreRepository.findById(genreDto.id())
-                .orElseThrow(() -> new RuntimeException("Genre not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Genre", "id", genreDto.id()));
         
         // Check if new name conflicts with existing genre (excluding current genre)
         if (!existingGenre.getName().equals(genreDto.name()) && 
             genreRepository.existsByName(genreDto.name())) {
-            throw new RuntimeException("Genre with name already exists: " + genreDto.name());
+            throw new DuplicateResourceException("Genre", "name", genreDto.name());
         }
         
         existingGenre.setName(genreDto.name());
@@ -103,13 +106,13 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public void deleteGenre(UUID id) {
         if (!genreRepository.existsById(id)) {
-            throw new RuntimeException("Genre not found");
+            throw new ResourceNotFoundException("Genre", "id", id);
         }
         
         // Check if any content is assigned this genre
         Long contentCount = getContentCountByGenreId(id);
         if (contentCount > 0) {
-            throw new RuntimeException("Cannot delete genre. " + contentCount + " content items are assigned this genre.");
+            throw new BusinessLogicException("Cannot delete genre. " + contentCount + " content items are assigned this genre.");
         }
         
         genreRepository.deleteById(id);

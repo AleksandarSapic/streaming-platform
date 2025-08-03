@@ -2,6 +2,8 @@ package com.aleksandar.streaming_platform.backend.service.impl;
 
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 import com.aleksandar.streaming_platform.backend.dto.GenreDto;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.Content;
 import com.aleksandar.streaming_platform.backend.model.Genre;
@@ -40,12 +42,12 @@ public class ContentGenreServiceImpl implements ContentGenreService {
     public void addGenreToContent(UUID contentId, UUID genreId) {
         // Validate content and genre exist
         Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new RuntimeException("Content not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Content", "id", contentId));
         Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new RuntimeException("Genre not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Genre", "id", genreId));
         
         if (contentGenreRepository.existsByContentIdAndGenreId(contentId, genreId)) {
-            throw new RuntimeException("Genre already assigned to content");
+            throw new BusinessLogicException("Genre already assigned to content");
         }
         
         ContentGenre contentGenre = new ContentGenre();
@@ -60,7 +62,7 @@ public class ContentGenreServiceImpl implements ContentGenreService {
     @Override
     public void removeGenreFromContent(UUID contentId, UUID genreId) {
         if (!contentGenreRepository.existsByContentIdAndGenreId(contentId, genreId)) {
-            throw new RuntimeException("Genre not assigned to content");
+            throw new BusinessLogicException("Genre not assigned to content");
         }
         contentGenreRepository.deleteByContentIdAndGenreId(contentId, genreId);
     }
@@ -129,7 +131,7 @@ public class ContentGenreServiceImpl implements ContentGenreService {
     public void bulkAssignGenresToContent(UUID contentId, List<UUID> genreIds) {
         // Validate content exists
         Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new RuntimeException("Content not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Content", "id", contentId));
         
         // Remove existing genre assignments
         removeAllGenresFromContent(contentId);
@@ -137,7 +139,7 @@ public class ContentGenreServiceImpl implements ContentGenreService {
         // Add new genre assignments
         for (UUID genreId : genreIds) {
             Genre genre = genreRepository.findById(genreId)
-                    .orElseThrow(() -> new RuntimeException("Genre not found: " + genreId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Genre", "id", genreId));
             
             ContentGenre contentGenre = new ContentGenre();
             contentGenre.setContentId(contentId);

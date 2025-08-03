@@ -3,6 +3,8 @@ package com.aleksandar.streaming_platform.backend.service.impl;
 import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.Watchlist;
 import com.aleksandar.streaming_platform.backend.model.Content;
@@ -41,12 +43,12 @@ public class WatchlistServiceImpl implements WatchlistService {
     public WatchlistDto addToWatchlist(UUID userId, UUID contentId) {
         // Validate user and content exist
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         Content content = contentRepository.findById(contentId)
-                .orElseThrow(() -> new RuntimeException("Content not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Content", "id", contentId));
         
         if (watchlistRepository.existsByUserIdAndContentId(userId, contentId)) {
-            throw new RuntimeException("Content already in watchlist");
+            throw new BusinessLogicException("Content already in watchlist");
         }
         
         Watchlist watchlist = new Watchlist();
@@ -62,7 +64,7 @@ public class WatchlistServiceImpl implements WatchlistService {
     @Override
     public void removeFromWatchlist(UUID userId, UUID contentId) {
         if (!watchlistRepository.existsByUserIdAndContentId(userId, contentId)) {
-            throw new RuntimeException("Content not in watchlist");
+            throw new BusinessLogicException("Content not in watchlist");
         }
         watchlistRepository.deleteByUserIdAndContentId(userId, contentId);
     }
@@ -153,9 +155,9 @@ public class WatchlistServiceImpl implements WatchlistService {
         try {
             // Validate both users exist
             User fromUser = userRepository.findById(fromUserId)
-                    .orElseThrow(() -> new RuntimeException("Source user not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", fromUserId));
             User toUser = userRepository.findById(toUserId)
-                    .orElseThrow(() -> new RuntimeException("Target user not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", toUserId));
             
             List<Watchlist> fromWatchlists = watchlistRepository.findByUserId(fromUserId);
             

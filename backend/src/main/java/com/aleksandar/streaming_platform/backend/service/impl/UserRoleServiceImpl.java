@@ -2,6 +2,9 @@ package com.aleksandar.streaming_platform.backend.service.impl;
 
 import com.aleksandar.streaming_platform.backend.dto.UserRoleDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.DuplicateResourceException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.UserRole;
 import com.aleksandar.streaming_platform.backend.model.User;
@@ -34,7 +37,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     public UserRoleDto createUserRole(UserRoleDto userRoleDto) {
         if (userRoleRepository.existsByName(userRoleDto.name())) {
-            throw new RuntimeException("User role with name already exists: " + userRoleDto.name());
+            throw new DuplicateResourceException("UserRole", "name", userRoleDto.name());
         }
         
         UserRole userRole = new UserRole();
@@ -67,12 +70,12 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     public UserRoleDto updateUserRole(UserRoleDto userRoleDto) {
         UserRole existingUserRole = userRoleRepository.findById(userRoleDto.id())
-                .orElseThrow(() -> new RuntimeException("User role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", userRoleDto.id()));
         
         // Check if new name conflicts with existing role (excluding current role)
         if (!existingUserRole.getName().equals(userRoleDto.name()) && 
             userRoleRepository.existsByName(userRoleDto.name())) {
-            throw new RuntimeException("User role with name already exists: " + userRoleDto.name());
+            throw new DuplicateResourceException("UserRole", "name", userRoleDto.name());
         }
         
         existingUserRole.setName(userRoleDto.name());
@@ -83,13 +86,13 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     public void deleteUserRole(UUID id) {
         if (!userRoleRepository.existsById(id)) {
-            throw new RuntimeException("User role not found");
+            throw new ResourceNotFoundException("UserRole", "id", id);
         }
         
         // Check if any users are assigned this role
         Long userCount = countUsersByRoleId(id);
         if (userCount > 0) {
-            throw new RuntimeException("Cannot delete user role. " + userCount + " users are assigned this role.");
+            throw new BusinessLogicException("Cannot delete user role. " + userCount + " users are assigned this role.");
         }
         
         userRoleRepository.deleteById(id);
@@ -107,7 +110,7 @@ public class UserRoleServiceImpl implements UserRoleService {
         List<User> users = userRepository.findByUserRoleName(
             userRoleRepository.findById(roleId)
                 .map(UserRole::getName)
-                .orElseThrow(() -> new RuntimeException("User role not found"))
+                .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId))
         );
         return dtoMapper.toUserDtoList(users);
     }
@@ -117,7 +120,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     public Long countUsersByRoleId(UUID roleId) {
         String roleName = userRoleRepository.findById(roleId)
                 .map(UserRole::getName)
-                .orElseThrow(() -> new RuntimeException("User role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId));
         
         return (long) userRepository.findByUserRoleName(roleName).size();
     }
