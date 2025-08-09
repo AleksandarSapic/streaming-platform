@@ -4,6 +4,9 @@ import com.aleksandar.streaming_platform.backend.dto.EpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.CreateEpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,13 +17,13 @@ public interface EpisodeService {
     
     Optional<EpisodeDto> getEpisodeById(UUID id);
     
-    List<EpisodeDto> getAllEpisodes();
+    Page<EpisodeDto> getAllEpisodes(Pageable pageable);
     
-    List<EpisodeDto> getEpisodesByContentId(UUID contentId);
+    Page<EpisodeDto> getEpisodesByContentId(UUID contentId, Pageable pageable);
     
-    List<EpisodeDto> getEpisodesByContentIdOrderedBySeasonAndEpisode(UUID contentId);
+    Page<EpisodeDto> getEpisodesByContentIdOrderedBySeasonAndEpisode(UUID contentId, Pageable pageable);
     
-    List<EpisodeDto> getEpisodesByContentIdAndSeason(UUID contentId, Integer seasonNumber);
+    Page<EpisodeDto> getEpisodesByContentIdAndSeason(UUID contentId, Integer seasonNumber, Pageable pageable);
     
     Optional<EpisodeDto> getSpecificEpisode(UUID contentId, Integer seasonNumber, Integer episodeNumber);
     

@@ -4,7 +4,9 @@ import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
 public interface WatchlistService {
@@ -13,13 +15,13 @@ public interface WatchlistService {
     
     void removeFromWatchlist(UUID userId, UUID contentId);
     
-    List<WatchlistDto> getWatchlistByUserId(UUID userId);
+    Page<WatchlistDto> getWatchlistByUserId(UUID userId, Pageable pageable);
     
-    List<WatchlistDto> getWatchlistByUserIdOrderedByDate(UUID userId);
+    Page<WatchlistDto> getWatchlistByUserIdOrderedByDate(UUID userId, Pageable pageable);
     
-    List<ContentDto> getWatchlistContentByUserId(UUID userId);
+    Page<ContentDto> getWatchlistContentByUserId(UUID userId, Pageable pageable);
     
-    List<UserDto> getUsersByContentInWatchlist(UUID contentId);
+    Page<UserDto> getUsersByContentInWatchlist(UUID contentId, Pageable pageable);
     
     boolean isContentInUserWatchlist(UUID userId, UUID contentId);
     
@@ -29,9 +31,9 @@ public interface WatchlistService {
     
     void clearUserWatchlist(UUID userId);
     
-    List<ContentDto> getWatchlistContentByUserIdAndGenre(UUID userId, String genreName);
+    Page<ContentDto> getWatchlistContentByUserIdAndGenre(UUID userId, String genreName, Pageable pageable);
     
-    List<ContentDto> getWatchlistContentByUserIdAndType(UUID userId, String typeName);
+    Page<ContentDto> getWatchlistContentByUserIdAndType(UUID userId, String typeName, Pageable pageable);
     
     boolean transferWatchlist(UUID fromUserId, UUID toUserId);
 }

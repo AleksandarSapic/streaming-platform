@@ -11,8 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -41,26 +42,26 @@ public class UserController {
     }
     
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> users = userService.getAllUsers();
+    public ResponseEntity<Page<UserDto>> getAllUsers(Pageable pageable) {
+        Page<UserDto> users = userService.getAllUsers(pageable);
         return ResponseEntity.ok(users);
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String name) {
-        List<UserDto> users = userService.searchUsersByName(name);
+    public ResponseEntity<Page<UserDto>> searchUsers(@RequestParam String name, Pageable pageable) {
+        Page<UserDto> users = userService.searchUsersByName(name, pageable);
         return ResponseEntity.ok(users);
     }
     
     @GetMapping("/by-country")
-    public ResponseEntity<List<UserDto>> getUsersByCountry(@RequestParam String country) {
-        List<UserDto> users = userService.getUsersByCountry(country);
+    public ResponseEntity<Page<UserDto>> getUsersByCountry(@RequestParam String country, Pageable pageable) {
+        Page<UserDto> users = userService.getUsersByCountry(country, pageable);
         return ResponseEntity.ok(users);
     }
     
     @GetMapping("/by-role")
-    public ResponseEntity<List<UserDto>> getUsersByRole(@RequestParam String roleName) {
-        List<UserDto> users = userService.getUsersByRoleName(roleName);
+    public ResponseEntity<Page<UserDto>> getUsersByRole(@RequestParam String roleName, Pageable pageable) {
+        Page<UserDto> users = userService.getUsersByRoleName(roleName, pageable);
         return ResponseEntity.ok(users);
     }
 
@@ -89,9 +90,9 @@ public class UserController {
     }
     
     @GetMapping("/{id}/watchlist")
-    public ResponseEntity<List<WatchlistDto>> getUserWatchlist(@PathVariable UUID id) {
+    public ResponseEntity<Page<WatchlistDto>> getUserWatchlist(@PathVariable UUID id, Pageable pageable) {
         authorizationService.validateWatchlistAccess(id);
-        List<WatchlistDto> watchlist = userService.getWatchlistByUserId(id);
+        Page<WatchlistDto> watchlist = userService.getWatchlistByUserId(id, pageable);
         return ResponseEntity.ok(watchlist);
     }
     
@@ -110,9 +111,9 @@ public class UserController {
     }
     
     @GetMapping("/{id}/recommendations")
-    public ResponseEntity<List<ContentDto>> getRecommendations(@PathVariable UUID id) {
+    public ResponseEntity<Page<ContentDto>> getRecommendations(@PathVariable UUID id, Pageable pageable) {
         authorizationService.validateUserAccess(id);
-        List<ContentDto> recommendations = userService.getRecommendedContentForUser(id);
+        Page<ContentDto> recommendations = userService.getRecommendedContentForUser(id, pageable);
         return ResponseEntity.ok(recommendations);
     }
     

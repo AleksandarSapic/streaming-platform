@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/v1/watchlist")
@@ -39,23 +40,23 @@ public class WatchlistController {
     }
     
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<WatchlistDto>> getUserWatchlist(@PathVariable UUID userId) {
+    public ResponseEntity<Page<WatchlistDto>> getUserWatchlist(@PathVariable UUID userId, Pageable pageable) {
         authorizationService.validateWatchlistAccess(userId);
-        List<WatchlistDto> watchlist = watchlistService.getWatchlistByUserIdOrderedByDate(userId);
+        Page<WatchlistDto> watchlist = watchlistService.getWatchlistByUserIdOrderedByDate(userId, pageable);
         return ResponseEntity.ok(watchlist);
     }
     
     @GetMapping("/user/{userId}/content")
-    public ResponseEntity<List<ContentDto>> getUserWatchlistContent(@PathVariable UUID userId) {
+    public ResponseEntity<Page<ContentDto>> getUserWatchlistContent(@PathVariable UUID userId, Pageable pageable) {
         authorizationService.validateWatchlistAccess(userId);
-        List<ContentDto> content = watchlistService.getWatchlistContentByUserId(userId);
+        Page<ContentDto> content = watchlistService.getWatchlistContentByUserId(userId, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/content/{contentId}/users")
-    public ResponseEntity<List<UserDto>> getUsersByContentInWatchlist(@PathVariable UUID contentId) {
+    public ResponseEntity<Page<UserDto>> getUsersByContentInWatchlist(@PathVariable UUID contentId, Pageable pageable) {
         authorizationService.validateAdminAccess();
-        List<UserDto> users = watchlistService.getUsersByContentInWatchlist(contentId);
+        Page<UserDto> users = watchlistService.getUsersByContentInWatchlist(contentId, pageable);
         return ResponseEntity.ok(users);
     }
     
@@ -87,16 +88,16 @@ public class WatchlistController {
     }
     
     @GetMapping("/user/{userId}/content/by-genre")
-    public ResponseEntity<List<ContentDto>> getWatchlistByGenre(@PathVariable UUID userId, @RequestParam String genre) {
+    public ResponseEntity<Page<ContentDto>> getWatchlistByGenre(@PathVariable UUID userId, @RequestParam String genre, Pageable pageable) {
         authorizationService.validateWatchlistAccess(userId);
-        List<ContentDto> content = watchlistService.getWatchlistContentByUserIdAndGenre(userId, genre);
+        Page<ContentDto> content = watchlistService.getWatchlistContentByUserIdAndGenre(userId, genre, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/user/{userId}/content/by-type")
-    public ResponseEntity<List<ContentDto>> getWatchlistByType(@PathVariable UUID userId, @RequestParam String type) {
+    public ResponseEntity<Page<ContentDto>> getWatchlistByType(@PathVariable UUID userId, @RequestParam String type, Pageable pageable) {
         authorizationService.validateWatchlistAccess(userId);
-        List<ContentDto> content = watchlistService.getWatchlistContentByUserIdAndType(userId, type);
+        Page<ContentDto> content = watchlistService.getWatchlistContentByUserIdAndType(userId, type, pageable);
         return ResponseEntity.ok(content);
     }
     

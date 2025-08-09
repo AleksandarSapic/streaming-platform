@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,8 +20,8 @@ public interface ContentTypeRepository extends JpaRepository<ContentType, UUID> 
     boolean existsByName(String name);
     
     @Query("SELECT ct FROM ContentType ct WHERE LOWER(ct.name) LIKE LOWER(CONCAT('%', :name, '%'))")
-    List<ContentType> findByNameContainingIgnoreCase(@Param("name") String name);
+    Page<ContentType> findByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
     
-    @Query("SELECT ct FROM ContentType ct ORDER BY ct.name")
-    List<ContentType> findAllOrderByName();
+    @Query("SELECT ct FROM ContentType ct")
+    Page<ContentType> findAllOrderByName(Pageable pageable);
 }

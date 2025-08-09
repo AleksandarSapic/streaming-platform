@@ -15,9 +15,11 @@ import com.aleksandar.streaming_platform.backend.service.UserRoleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
@@ -70,9 +72,9 @@ public class UserRoleServiceImpl implements UserRoleService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<UserRoleDto> getAllUserRoles() {
-        List<UserRole> userRoles = userRoleRepository.findAll();
-        return dtoMapper.toUserRoleDtoList(userRoles);
+    public Page<UserRoleDto> getAllUserRoles(Pageable pageable) {
+        Page<UserRole> userRoles = userRoleRepository.findAll(pageable);
+        return userRoles.map(dtoMapper::toUserRoleDto);
     }
     
     @Override
@@ -121,13 +123,13 @@ public class UserRoleServiceImpl implements UserRoleService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getUsersByRoleId(UUID roleId) {
+    public Page<UserDto> getUsersByRoleId(UUID roleId, Pageable pageable) {
         UserRoleType roleType = userRoleRepository.findById(roleId)
                 .map(UserRole::getName)
                 .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId));
         
-        List<User> users = userRepository.findByUserRoleType(roleType);
-        return dtoMapper.toUserDtoList(users);
+        Page<User> users = userRepository.findByUserRoleType(roleType, pageable);
+        return users.map(dtoMapper::toUserDto);
     }
     
     @Override
@@ -137,6 +139,6 @@ public class UserRoleServiceImpl implements UserRoleService {
                 .map(UserRole::getName)
                 .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId));
         
-        return (long) userRepository.findByUserRoleType(roleType).size();
+        return userRepository.countByUserRoleType(roleType);
     }
 }

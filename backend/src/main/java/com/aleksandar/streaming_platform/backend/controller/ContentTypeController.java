@@ -8,8 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/v1/content-types")
@@ -42,20 +43,20 @@ public class ContentTypeController {
     }
     
     @GetMapping
-    public ResponseEntity<List<ContentTypeDto>> getAllContentTypes() {
-        List<ContentTypeDto> contentTypes = contentTypeService.getAllContentTypesOrderedByName();
+    public ResponseEntity<Page<ContentTypeDto>> getAllContentTypes(Pageable pageable) {
+        Page<ContentTypeDto> contentTypes = contentTypeService.getAllContentTypesOrderedByName(pageable);
         return ResponseEntity.ok(contentTypes);
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<ContentTypeDto>> searchContentTypes(@RequestParam String name) {
-        List<ContentTypeDto> contentTypes = contentTypeService.searchContentTypesByName(name);
+    public ResponseEntity<Page<ContentTypeDto>> searchContentTypes(@RequestParam String name, Pageable pageable) {
+        Page<ContentTypeDto> contentTypes = contentTypeService.searchContentTypesByName(name, pageable);
         return ResponseEntity.ok(contentTypes);
     }
     
     @GetMapping("/popular")
-    public ResponseEntity<List<ContentTypeDto>> getPopularContentTypes() {
-        List<ContentTypeDto> contentTypes = contentTypeService.getPopularContentTypes();
+    public ResponseEntity<Page<ContentTypeDto>> getPopularContentTypes(Pageable pageable) {
+        Page<ContentTypeDto> contentTypes = contentTypeService.getPopularContentTypes(pageable);
         return ResponseEntity.ok(contentTypes);
     }
     
@@ -75,14 +76,14 @@ public class ContentTypeController {
     }
     
     @GetMapping("/{id}/content")
-    public ResponseEntity<List<ContentDto>> getContentByType(@PathVariable UUID id) {
-        List<ContentDto> content = contentTypeService.getContentByTypeId(id);
+    public ResponseEntity<Page<ContentDto>> getContentByType(@PathVariable UUID id, Pageable pageable) {
+        Page<ContentDto> content = contentTypeService.getContentByTypeId(id, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/by-name/{name}/content")
-    public ResponseEntity<List<ContentDto>> getContentByTypeName(@PathVariable String name) {
-        List<ContentDto> content = contentTypeService.getContentByTypeName(name);
+    public ResponseEntity<Page<ContentDto>> getContentByTypeName(@PathVariable String name, Pageable pageable) {
+        Page<ContentDto> content = contentTypeService.getContentByTypeName(name, pageable);
         return ResponseEntity.ok(content);
     }
     

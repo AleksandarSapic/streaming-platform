@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
@@ -71,36 +73,30 @@ public class WatchlistServiceImpl implements WatchlistService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<WatchlistDto> getWatchlistByUserId(UUID userId) {
-        List<Watchlist> watchlists = watchlistRepository.findByUserId(userId);
-        return dtoMapper.toWatchlistDtoList(watchlists);
+    public Page<WatchlistDto> getWatchlistByUserId(UUID userId, Pageable pageable) {
+        Page<Watchlist> watchlists = watchlistRepository.findByUserId(userId, pageable);
+        return watchlists.map(dtoMapper::toWatchlistDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<WatchlistDto> getWatchlistByUserIdOrderedByDate(UUID userId) {
-        List<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId);
-        return dtoMapper.toWatchlistDtoList(watchlists);
+    public Page<WatchlistDto> getWatchlistByUserIdOrderedByDate(UUID userId, Pageable pageable) {
+        Page<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId, pageable);
+        return watchlists.map(dtoMapper::toWatchlistDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getWatchlistContentByUserId(UUID userId) {
-        List<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId);
-        List<Content> contents = watchlists.stream()
-                .map(Watchlist::getContent)
-                .collect(Collectors.toList());
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getWatchlistContentByUserId(UUID userId, Pageable pageable) {
+        Page<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId, pageable);
+        return watchlists.map(watchlist -> dtoMapper.toContentDto(watchlist.getContent()));
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getUsersByContentInWatchlist(UUID contentId) {
-        List<Watchlist> watchlists = watchlistRepository.findByContentId(contentId);
-        List<User> users = watchlists.stream()
-                .map(Watchlist::getUser)
-                .collect(Collectors.toList());
-        return dtoMapper.toUserDtoList(users);
+    public Page<UserDto> getUsersByContentInWatchlist(UUID contentId, Pageable pageable) {
+        Page<Watchlist> watchlists = watchlistRepository.findByContentId(contentId, pageable);
+        return watchlists.map(watchlist -> dtoMapper.toUserDto(watchlist.getUser()));
     }
     
     @Override
@@ -123,31 +119,22 @@ public class WatchlistServiceImpl implements WatchlistService {
     
     @Override
     public void clearUserWatchlist(UUID userId) {
-        List<Watchlist> watchlists = watchlistRepository.findByUserId(userId);
+        List<Watchlist> watchlists = watchlistRepository.findByUserIdList(userId);
         watchlistRepository.deleteAll(watchlists);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getWatchlistContentByUserIdAndGenre(UUID userId, String genreName) {
-        List<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId);
-        List<Content> contents = watchlists.stream()
-                .map(Watchlist::getContent)
-                .filter(content -> content.getContentGenres().stream()
-                        .anyMatch(cg -> cg.getGenre().getName().equalsIgnoreCase(genreName)))
-                .collect(Collectors.toList());
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getWatchlistContentByUserIdAndGenre(UUID userId, String genreName, Pageable pageable) {
+        Page<Watchlist> watchlists = watchlistRepository.findByUserIdAndContentGenreName(userId, genreName, pageable);
+        return watchlists.map(watchlist -> dtoMapper.toContentDto(watchlist.getContent()));
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getWatchlistContentByUserIdAndType(UUID userId, String typeName) {
-        List<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId);
-        List<Content> contents = watchlists.stream()
-                .map(Watchlist::getContent)
-                .filter(content -> content.getContentType().getName().equalsIgnoreCase(typeName))
-                .collect(Collectors.toList());
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getWatchlistContentByUserIdAndType(UUID userId, String typeName, Pageable pageable) {
+        Page<Watchlist> watchlists = watchlistRepository.findByUserIdAndContentTypeName(userId, typeName, pageable);
+        return watchlists.map(watchlist -> dtoMapper.toContentDto(watchlist.getContent()));
     }
     
     @Override
@@ -159,7 +146,7 @@ public class WatchlistServiceImpl implements WatchlistService {
             User toUser = userRepository.findById(toUserId)
                     .orElseThrow(() -> new ResourceNotFoundException("User", "id", toUserId));
             
-            List<Watchlist> fromWatchlists = watchlistRepository.findByUserId(fromUserId);
+            List<Watchlist> fromWatchlists = watchlistRepository.findByUserIdList(fromUserId);
             
             for (Watchlist watchlist : fromWatchlists) {
                 // Check if target user already has this content in watchlist

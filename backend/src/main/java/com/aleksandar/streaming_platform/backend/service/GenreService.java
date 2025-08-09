@@ -3,7 +3,9 @@ package com.aleksandar.streaming_platform.backend.service;
 import com.aleksandar.streaming_platform.backend.dto.GenreDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,11 +17,11 @@ public interface GenreService {
     
     Optional<GenreDto> getGenreByName(String name);
     
-    List<GenreDto> getAllGenres();
+    Page<GenreDto> getAllGenres(Pageable pageable);
     
-    List<GenreDto> getAllGenresOrderedByName();
+    Page<GenreDto> getAllGenresOrderedByName(Pageable pageable);
     
-    List<GenreDto> searchGenresByName(String name);
+    Page<GenreDto> searchGenresByName(String name, Pageable pageable);
     
     GenreDto updateGenre(GenreDto genreDto);
     
@@ -27,13 +29,13 @@ public interface GenreService {
     
     boolean existsByName(String name);
     
-    List<ContentDto> getContentByGenreId(UUID genreId);
+    Page<ContentDto> getContentByGenreId(UUID genreId, Pageable pageable);
     
-    List<ContentDto> getContentByGenreName(String genreName);
+    Page<ContentDto> getContentByGenreName(String genreName, Pageable pageable);
     
     Long getContentCountByGenreId(UUID genreId);
     
-    List<GenreDto> getPopularGenres();
+    Page<GenreDto> getPopularGenres(Pageable pageable);
     
-    List<GenreDto> getGenresByContentId(UUID contentId);
+    Page<GenreDto> getGenresByContentId(UUID contentId, Pageable pageable);
 }

@@ -14,9 +14,11 @@ import com.aleksandar.streaming_platform.backend.service.ContentTypeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
@@ -62,23 +64,23 @@ public class ContentTypeServiceImpl implements ContentTypeService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentTypeDto> getAllContentTypes() {
-        List<ContentType> contentTypes = contentTypeRepository.findAll();
-        return dtoMapper.toContentTypeDtoList(contentTypes);
+    public Page<ContentTypeDto> getAllContentTypes(Pageable pageable) {
+        Page<ContentType> contentTypes = contentTypeRepository.findAll(pageable);
+        return contentTypes.map(dtoMapper::toContentTypeDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentTypeDto> getAllContentTypesOrderedByName() {
-        List<ContentType> contentTypes = contentTypeRepository.findAllOrderByName();
-        return dtoMapper.toContentTypeDtoList(contentTypes);
+    public Page<ContentTypeDto> getAllContentTypesOrderedByName(Pageable pageable) {
+        Page<ContentType> contentTypes = contentTypeRepository.findAllOrderByName(pageable);
+        return contentTypes.map(dtoMapper::toContentTypeDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentTypeDto> searchContentTypesByName(String name) {
-        List<ContentType> contentTypes = contentTypeRepository.findByNameContainingIgnoreCase(name);
-        return dtoMapper.toContentTypeDtoList(contentTypes);
+    public Page<ContentTypeDto> searchContentTypesByName(String name, Pageable pageable) {
+        Page<ContentType> contentTypes = contentTypeRepository.findByNameContainingIgnoreCase(name, pageable);
+        return contentTypes.map(dtoMapper::toContentTypeDto);
     }
     
     @Override
@@ -118,29 +120,29 @@ public class ContentTypeServiceImpl implements ContentTypeService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByTypeId(UUID typeId) {
-        List<Content> contents = contentRepository.findByContentTypeId(typeId);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getContentByTypeId(UUID typeId, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByContentTypeId(typeId, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByTypeName(String typeName) {
-        List<Content> contents = contentRepository.findByContentTypeName(typeName);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getContentByTypeName(String typeName, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByContentTypeName(typeName, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
     public Long getContentCountByTypeId(UUID typeId) {
-        return (long) contentRepository.findByContentTypeId(typeId).size();
+        return contentRepository.countByContentTypeId(typeId);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentTypeDto> getPopularContentTypes() {
+    public Page<ContentTypeDto> getPopularContentTypes(Pageable pageable) {
         // TODO: Implement popularity algorithm based on content count, user preferences, etc.
         // For now, return all content types ordered by name
-        return getAllContentTypesOrderedByName();
+        return getAllContentTypesOrderedByName(pageable);
     }
 }

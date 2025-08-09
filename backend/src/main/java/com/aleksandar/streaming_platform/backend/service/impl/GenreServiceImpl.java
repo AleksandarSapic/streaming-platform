@@ -21,6 +21,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 @Service
 @Transactional
 public class GenreServiceImpl implements GenreService {
@@ -68,23 +72,23 @@ public class GenreServiceImpl implements GenreService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<GenreDto> getAllGenres() {
-        List<Genre> genres = genreRepository.findAll();
-        return dtoMapper.toGenreDtoList(genres);
+    public Page<GenreDto> getAllGenres(Pageable pageable) {
+        Page<Genre> genres = genreRepository.findAll(pageable);
+        return genres.map(dtoMapper::toGenreDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<GenreDto> getAllGenresOrderedByName() {
-        List<Genre> genres = genreRepository.findAllOrderByName();
-        return dtoMapper.toGenreDtoList(genres);
+    public Page<GenreDto> getAllGenresOrderedByName(Pageable pageable) {
+        Page<Genre> genres = genreRepository.findAllOrderByName(pageable);
+        return genres.map(dtoMapper::toGenreDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<GenreDto> searchGenresByName(String name) {
-        List<Genre> genres = genreRepository.findByNameContainingIgnoreCase(name);
-        return dtoMapper.toGenreDtoList(genres);
+    public Page<GenreDto> searchGenresByName(String name, Pageable pageable) {
+        Page<Genre> genres = genreRepository.findByNameContainingIgnoreCase(name, pageable);
+        return genres.map(dtoMapper::toGenreDto);
     }
     
     @Override
@@ -126,19 +130,26 @@ public class GenreServiceImpl implements GenreService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByGenreId(UUID genreId) {
+    public Page<ContentDto> getContentByGenreId(UUID genreId, Pageable pageable) {
         List<ContentGenre> contentGenres = contentGenreRepository.findByGenreId(genreId);
-        List<Content> contents = contentGenres.stream()
-                .map(ContentGenre::getContent)
+        // Convert to page manually since ContentGenreRepository doesn't support pagination
+        List<ContentDto> contentDtos = contentGenres.stream()
+                .map(contentGenre -> dtoMapper.toContentDto(contentGenre.getContent()))
                 .collect(Collectors.toList());
-        return dtoMapper.toContentDtoList(contents);
+        
+        // Create a page from the list (simple implementation for pagination)
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), contentDtos.size());
+        List<ContentDto> pageContent = start >= contentDtos.size() ? List.of() : contentDtos.subList(start, end);
+        
+        return new PageImpl<>(pageContent, pageable, contentDtos.size());
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByGenreName(String genreName) {
-        List<Content> contents = contentRepository.findByGenreName(genreName);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getContentByGenreName(String genreName, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByGenreName(genreName, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
@@ -149,19 +160,26 @@ public class GenreServiceImpl implements GenreService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<GenreDto> getPopularGenres() {
+    public Page<GenreDto> getPopularGenres(Pageable pageable) {
         // TODO: Implement popularity algorithm based on content count, user preferences, etc.
         // For now, return all genres ordered by name
-        return getAllGenresOrderedByName();
+        return getAllGenresOrderedByName(pageable);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<GenreDto> getGenresByContentId(UUID contentId) {
+    public Page<GenreDto> getGenresByContentId(UUID contentId, Pageable pageable) {
         List<ContentGenre> contentGenres = contentGenreRepository.findByContentId(contentId);
-        List<Genre> genres = contentGenres.stream()
-                .map(ContentGenre::getGenre)
+        // Convert to page manually since ContentGenreRepository doesn't support pagination
+        List<GenreDto> genreDtos = contentGenres.stream()
+                .map(contentGenre -> dtoMapper.toGenreDto(contentGenre.getGenre()))
                 .collect(Collectors.toList());
-        return dtoMapper.toGenreDtoList(genres);
+        
+        // Create a page from the list (simple implementation for pagination)
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), genreDtos.size());
+        List<GenreDto> pageContent = start >= genreDtos.size() ? List.of() : genreDtos.subList(start, end);
+        
+        return new PageImpl<>(pageContent, pageable, genreDtos.size());
     }
 }

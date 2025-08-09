@@ -3,7 +3,9 @@ package com.aleksandar.streaming_platform.backend.service;
 import com.aleksandar.streaming_platform.backend.dto.ContentTypeDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,11 +17,11 @@ public interface ContentTypeService {
     
     Optional<ContentTypeDto> getContentTypeByName(String name);
     
-    List<ContentTypeDto> getAllContentTypes();
+    Page<ContentTypeDto> getAllContentTypes(Pageable pageable);
     
-    List<ContentTypeDto> getAllContentTypesOrderedByName();
+    Page<ContentTypeDto> getAllContentTypesOrderedByName(Pageable pageable);
     
-    List<ContentTypeDto> searchContentTypesByName(String name);
+    Page<ContentTypeDto> searchContentTypesByName(String name, Pageable pageable);
     
     ContentTypeDto updateContentType(ContentTypeDto contentTypeDto);
     
@@ -27,11 +29,11 @@ public interface ContentTypeService {
     
     boolean existsByName(String name);
     
-    List<ContentDto> getContentByTypeId(UUID typeId);
+    Page<ContentDto> getContentByTypeId(UUID typeId, Pageable pageable);
     
-    List<ContentDto> getContentByTypeName(String typeName);
+    Page<ContentDto> getContentByTypeName(String typeName, Pageable pageable);
     
     Long getContentCountByTypeId(UUID typeId);
     
-    List<ContentTypeDto> getPopularContentTypes();
+    Page<ContentTypeDto> getPopularContentTypes(Pageable pageable);
 }

@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 @Transactional
 public class EpisodeServiceImpl implements EpisodeService {
@@ -66,30 +69,30 @@ public class EpisodeServiceImpl implements EpisodeService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<EpisodeDto> getAllEpisodes() {
-        List<Episode> episodes = episodeRepository.findAll();
-        return dtoMapper.toEpisodeDtoList(episodes);
+    public Page<EpisodeDto> getAllEpisodes(Pageable pageable) {
+        Page<Episode> episodes = episodeRepository.findAll(pageable);
+        return episodes.map(dtoMapper::toEpisodeDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<EpisodeDto> getEpisodesByContentId(UUID contentId) {
-        List<Episode> episodes = episodeRepository.findByContentId(contentId);
-        return dtoMapper.toEpisodeDtoList(episodes);
+    public Page<EpisodeDto> getEpisodesByContentId(UUID contentId, Pageable pageable) {
+        Page<Episode> episodes = episodeRepository.findByContentId(contentId, pageable);
+        return episodes.map(dtoMapper::toEpisodeDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<EpisodeDto> getEpisodesByContentIdOrderedBySeasonAndEpisode(UUID contentId) {
-        List<Episode> episodes = episodeRepository.findByContentIdOrderBySeasonNumberAscEpisodeNumberAsc(contentId);
-        return dtoMapper.toEpisodeDtoList(episodes);
+    public Page<EpisodeDto> getEpisodesByContentIdOrderedBySeasonAndEpisode(UUID contentId, Pageable pageable) {
+        Page<Episode> episodes = episodeRepository.findByContentIdOrderBySeasonNumberAscEpisodeNumberAsc(contentId, pageable);
+        return episodes.map(dtoMapper::toEpisodeDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<EpisodeDto> getEpisodesByContentIdAndSeason(UUID contentId, Integer seasonNumber) {
-        List<Episode> episodes = episodeRepository.findByContentIdAndSeasonNumber(contentId, seasonNumber);
-        return dtoMapper.toEpisodeDtoList(episodes);
+    public Page<EpisodeDto> getEpisodesByContentIdAndSeason(UUID contentId, Integer seasonNumber, Pageable pageable) {
+        Page<Episode> episodes = episodeRepository.findByContentIdAndSeasonNumber(contentId, seasonNumber, pageable);
+        return episodes.map(dtoMapper::toEpisodeDto);
     }
     
     @Override
@@ -142,7 +145,7 @@ public class EpisodeServiceImpl implements EpisodeService {
     @Override
     @Transactional(readOnly = true)
     public List<Integer> getSeasonNumbersByContentId(UUID contentId) {
-        return episodeRepository.findDistinctSeasonNumbersByContentId(contentId);
+        return episodeRepository.findDistinctSeasonNumbersByContentIdList(contentId);
     }
     
     @Override
@@ -171,7 +174,7 @@ public class EpisodeServiceImpl implements EpisodeService {
         }
         
         // If no next episode in same season, find first episode of next season
-        List<Integer> seasons = getSeasonNumbersByContentId(contentId);
+        List<Integer> seasons = episodeRepository.findDistinctSeasonNumbersByContentIdList(contentId);
         for (Integer season : seasons) {
             if (season > currentSeason) {
                 List<Episode> nextSeason = episodeRepository.findEpisodesByContentIdAndSeasonNumberOrderByEpisodeNumber(
@@ -205,7 +208,7 @@ public class EpisodeServiceImpl implements EpisodeService {
         }
         
         // If no previous episode in same season, find last episode of previous season
-        List<Integer> seasons = getSeasonNumbersByContentId(contentId);
+        List<Integer> seasons = episodeRepository.findDistinctSeasonNumbersByContentIdList(contentId);
         Integer prevSeason = null;
         for (Integer season : seasons) {
             if (season >= currentSeason) {

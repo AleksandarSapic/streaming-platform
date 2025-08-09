@@ -27,6 +27,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 @Service
 @Transactional
 public class ContentServiceImpl implements ContentService {
@@ -90,58 +94,58 @@ public class ContentServiceImpl implements ContentService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getAllContent() {
-        List<Content> contents = contentRepository.findAll();
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getAllContent(Pageable pageable) {
+        Page<Content> contents = contentRepository.findAll(pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getAvailableContent() {
-        List<Content> contents = contentRepository.findByIsAvailable(true);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getAvailableContent(Pageable pageable) {
+        Page<Content> contents = contentRepository.findByIsAvailable(true, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByType(String typeName) {
-        List<Content> contents = contentRepository.findByContentTypeName(typeName);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getContentByType(String typeName, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByContentTypeName(typeName, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByGenre(String genreName) {
-        List<Content> contents = contentRepository.findByGenreName(genreName);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getContentByGenre(String genreName, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByGenreName(genreName, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> searchContentByTitle(String title) {
-        List<Content> contents = contentRepository.findByTitleContainingIgnoreCase(title);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> searchContentByTitle(String title, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByTitleContainingIgnoreCase(title, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByLanguage(String language) {
-        List<Content> contents = contentRepository.findByLanguage(language);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getContentByLanguage(String language, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByLanguage(language, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentByDateRange(LocalDate startDate, LocalDate endDate) {
-        List<Content> contents = contentRepository.findByReleaseDateBetween(startDate, endDate);
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getContentByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByReleaseDateBetween(startDate, endDate, pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getRecentContent() {
-        List<Content> contents = contentRepository.findAvailableContentOrderByReleaseDateDesc();
-        return dtoMapper.toContentDtoList(contents);
+    public Page<ContentDto> getRecentContent(Pageable pageable) {
+        Page<Content> contents = contentRepository.findAvailableContentOrderByReleaseDateDesc(pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
@@ -188,19 +192,26 @@ public class ContentServiceImpl implements ContentService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<EpisodeDto> getEpisodesByContentId(UUID contentId) {
-        List<Episode> episodes = episodeRepository.findByContentIdOrderBySeasonNumberAscEpisodeNumberAsc(contentId);
-        return dtoMapper.toEpisodeDtoList(episodes);
+    public Page<EpisodeDto> getEpisodesByContentId(UUID contentId, Pageable pageable) {
+        Page<Episode> episodes = episodeRepository.findByContentIdOrderBySeasonNumberAscEpisodeNumberAsc(contentId, pageable);
+        return episodes.map(dtoMapper::toEpisodeDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<GenreDto> getGenresByContentId(UUID contentId) {
+    public Page<GenreDto> getGenresByContentId(UUID contentId, Pageable pageable) {
         List<ContentGenre> contentGenres = contentGenreRepository.findByContentId(contentId);
-        List<Genre> genres = contentGenres.stream()
-                .map(ContentGenre::getGenre)
+        // Convert to page manually since ContentGenreRepository doesn't support pagination
+        List<GenreDto> genreDtos = contentGenres.stream()
+                .map(contentGenre -> dtoMapper.toGenreDto(contentGenre.getGenre()))
                 .collect(Collectors.toList());
-        return dtoMapper.toGenreDtoList(genres);
+        
+        // Create a page from the list (simple implementation for pagination)
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), genreDtos.size());
+        List<GenreDto> pageContent = start >= genreDtos.size() ? List.of() : genreDtos.subList(start, end);
+        
+        return new PageImpl<>(pageContent, pageable, genreDtos.size());
     }
     
     @Override
@@ -232,19 +243,19 @@ public class ContentServiceImpl implements ContentService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getPopularContent() {
+    public Page<ContentDto> getPopularContent(Pageable pageable) {
         // TODO: Implement popularity algorithm based on watchlist counts, ratings, etc.
         // For now, return recent available content
-        List<Content> contents = contentRepository.findAvailableContentOrderByReleaseDateDesc();
-        return dtoMapper.toContentDtoList(contents);
+        Page<Content> contents = contentRepository.findAvailableContentOrderByReleaseDateDesc(pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getContentRecommendations(UUID userId) {
+    public Page<ContentDto> getContentRecommendations(UUID userId, Pageable pageable) {
         // TODO: Implement recommendation algorithm based on user preferences, watch history, etc.
         // For now, return recent available content
-        List<Content> contents = contentRepository.findAvailableContentOrderByReleaseDateDesc();
-        return dtoMapper.toContentDtoList(contents);
+        Page<Content> contents = contentRepository.findAvailableContentOrderByReleaseDateDesc(pageable);
+        return contents.map(dtoMapper::toContentDto);
     }
 }

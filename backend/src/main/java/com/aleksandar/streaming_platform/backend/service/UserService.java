@@ -5,7 +5,9 @@ import com.aleksandar.streaming_platform.backend.dto.CreateUserDto;
 import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,13 +19,13 @@ public interface UserService {
     
     Optional<UserDto> getUserByEmail(String email);
     
-    List<UserDto> getAllUsers();
+    Page<UserDto> getAllUsers(Pageable pageable);
     
-    List<UserDto> getUsersByCountry(String country);
+    Page<UserDto> getUsersByCountry(String country, Pageable pageable);
     
-    List<UserDto> getUsersByRoleName(String roleName);
+    Page<UserDto> getUsersByRoleName(String roleName, Pageable pageable);
     
-    List<UserDto> searchUsersByName(String name);
+    Page<UserDto> searchUsersByName(String name, Pageable pageable);
     
     UserDto updateUser(UserDto userDto);
     
@@ -37,9 +39,9 @@ public interface UserService {
     
     UserDto assignUserRole(UUID userId, UUID roleId);
     
-    List<WatchlistDto> getWatchlistByUserId(UUID userId);
+    Page<WatchlistDto> getWatchlistByUserId(UUID userId, Pageable pageable);
     
-    List<ContentDto> getRecommendedContentForUser(UUID userId);
+    Page<ContentDto> getRecommendedContentForUser(UUID userId, Pageable pageable);
     
     void addToWatchlist(UUID userId, UUID contentId);
     

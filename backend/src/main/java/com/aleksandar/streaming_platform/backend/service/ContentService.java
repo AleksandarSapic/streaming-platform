@@ -5,8 +5,10 @@ import com.aleksandar.streaming_platform.backend.dto.CreateContentDto;
 import com.aleksandar.streaming_platform.backend.dto.EpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.GenreDto;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,21 +18,21 @@ public interface ContentService {
     
     Optional<ContentDto> getContentById(UUID id);
     
-    List<ContentDto> getAllContent();
+    Page<ContentDto> getAllContent(Pageable pageable);
     
-    List<ContentDto> getAvailableContent();
+    Page<ContentDto> getAvailableContent(Pageable pageable);
     
-    List<ContentDto> getContentByType(String typeName);
+    Page<ContentDto> getContentByType(String typeName, Pageable pageable);
     
-    List<ContentDto> getContentByGenre(String genreName);
+    Page<ContentDto> getContentByGenre(String genreName, Pageable pageable);
     
-    List<ContentDto> searchContentByTitle(String title);
+    Page<ContentDto> searchContentByTitle(String title, Pageable pageable);
     
-    List<ContentDto> getContentByLanguage(String language);
+    Page<ContentDto> getContentByLanguage(String language, Pageable pageable);
     
-    List<ContentDto> getContentByDateRange(LocalDate startDate, LocalDate endDate);
+    Page<ContentDto> getContentByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
     
-    List<ContentDto> getRecentContent();
+    Page<ContentDto> getRecentContent(Pageable pageable);
     
     ContentDto updateContent(ContentDto contentDto);
     
@@ -38,15 +40,15 @@ public interface ContentService {
     
     ContentDto toggleContentAvailability(UUID contentId);
     
-    List<EpisodeDto> getEpisodesByContentId(UUID contentId);
+    Page<EpisodeDto> getEpisodesByContentId(UUID contentId, Pageable pageable);
     
-    List<GenreDto> getGenresByContentId(UUID contentId);
+    Page<GenreDto> getGenresByContentId(UUID contentId, Pageable pageable);
     
     void addGenreToContent(UUID contentId, UUID genreId);
     
     void removeGenreFromContent(UUID contentId, UUID genreId);
     
-    List<ContentDto> getPopularContent();
+    Page<ContentDto> getPopularContent(Pageable pageable);
     
-    List<ContentDto> getContentRecommendations(UUID userId);
+    Page<ContentDto> getContentRecommendations(UUID userId, Pageable pageable);
 }

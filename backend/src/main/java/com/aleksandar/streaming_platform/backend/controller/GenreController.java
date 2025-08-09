@@ -8,8 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/v1/genres")
@@ -42,20 +43,20 @@ public class GenreController {
     }
     
     @GetMapping
-    public ResponseEntity<List<GenreDto>> getAllGenres() {
-        List<GenreDto> genres = genreService.getAllGenresOrderedByName();
+    public ResponseEntity<Page<GenreDto>> getAllGenres(Pageable pageable) {
+        Page<GenreDto> genres = genreService.getAllGenresOrderedByName(pageable);
         return ResponseEntity.ok(genres);
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<GenreDto>> searchGenres(@RequestParam String name) {
-        List<GenreDto> genres = genreService.searchGenresByName(name);
+    public ResponseEntity<Page<GenreDto>> searchGenres(@RequestParam String name, Pageable pageable) {
+        Page<GenreDto> genres = genreService.searchGenresByName(name, pageable);
         return ResponseEntity.ok(genres);
     }
     
     @GetMapping("/popular")
-    public ResponseEntity<List<GenreDto>> getPopularGenres() {
-        List<GenreDto> genres = genreService.getPopularGenres();
+    public ResponseEntity<Page<GenreDto>> getPopularGenres(Pageable pageable) {
+        Page<GenreDto> genres = genreService.getPopularGenres(pageable);
         return ResponseEntity.ok(genres);
     }
     
@@ -75,14 +76,14 @@ public class GenreController {
     }
     
     @GetMapping("/{id}/content")
-    public ResponseEntity<List<ContentDto>> getContentByGenre(@PathVariable UUID id) {
-        List<ContentDto> content = genreService.getContentByGenreId(id);
+    public ResponseEntity<Page<ContentDto>> getContentByGenre(@PathVariable UUID id, Pageable pageable) {
+        Page<ContentDto> content = genreService.getContentByGenreId(id, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/by-name/{name}/content")
-    public ResponseEntity<List<ContentDto>> getContentByGenreName(@PathVariable String name) {
-        List<ContentDto> content = genreService.getContentByGenreName(name);
+    public ResponseEntity<Page<ContentDto>> getContentByGenreName(@PathVariable String name, Pageable pageable) {
+        Page<ContentDto> content = genreService.getContentByGenreName(name, pageable);
         return ResponseEntity.ok(content);
     }
     
@@ -93,8 +94,8 @@ public class GenreController {
     }
     
     @GetMapping("/by-content/{contentId}")
-    public ResponseEntity<List<GenreDto>> getGenresByContent(@PathVariable UUID contentId) {
-        List<GenreDto> genres = genreService.getGenresByContentId(contentId);
+    public ResponseEntity<Page<GenreDto>> getGenresByContent(@PathVariable UUID contentId, Pageable pageable) {
+        Page<GenreDto> genres = genreService.getGenresByContentId(contentId, pageable);
         return ResponseEntity.ok(genres);
     }
 }

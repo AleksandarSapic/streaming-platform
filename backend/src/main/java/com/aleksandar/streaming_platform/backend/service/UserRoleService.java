@@ -3,7 +3,9 @@ package com.aleksandar.streaming_platform.backend.service;
 import com.aleksandar.streaming_platform.backend.dto.UserRoleDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,7 +17,7 @@ public interface UserRoleService {
     
     Optional<UserRoleDto> getUserRoleByName(String name);
     
-    List<UserRoleDto> getAllUserRoles();
+    Page<UserRoleDto> getAllUserRoles(Pageable pageable);
     
     UserRoleDto updateUserRole(UserRoleDto userRoleDto);
     
@@ -23,7 +25,7 @@ public interface UserRoleService {
     
     boolean existsByName(String name);
     
-    List<UserDto> getUsersByRoleId(UUID roleId);
+    Page<UserDto> getUsersByRoleId(UUID roleId, Pageable pageable);
     
     Long countUsersByRoleId(UUID roleId);
 }

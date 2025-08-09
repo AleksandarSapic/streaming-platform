@@ -25,9 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
@@ -93,30 +95,30 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return dtoMapper.toUserDtoList(users);
+    public Page<UserDto> getAllUsers(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        return users.map(dtoMapper::toUserDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getUsersByCountry(String country) {
-        List<User> users = userRepository.findByCountry(country);
-        return dtoMapper.toUserDtoList(users);
+    public Page<UserDto> getUsersByCountry(String country, Pageable pageable) {
+        Page<User> users = userRepository.findByCountry(country, pageable);
+        return users.map(dtoMapper::toUserDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getUsersByRoleName(String roleName) {
-        List<User> users = userRepository.findByUserRoleName(roleName);
-        return dtoMapper.toUserDtoList(users);
+    public Page<UserDto> getUsersByRoleName(String roleName, Pageable pageable) {
+        Page<User> users = userRepository.findByUserRoleName(roleName, pageable);
+        return users.map(dtoMapper::toUserDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> searchUsersByName(String name) {
-        List<User> users = userRepository.findByFullNameContainingIgnoreCase(name);
-        return dtoMapper.toUserDtoList(users);
+    public Page<UserDto> searchUsersByName(String name, Pageable pageable) {
+        Page<User> users = userRepository.findByFullNameContainingIgnoreCase(name, pageable);
+        return users.map(dtoMapper::toUserDto);
     }
     
     @Override
@@ -182,18 +184,18 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional(readOnly = true)
-    public List<WatchlistDto> getWatchlistByUserId(UUID userId) {
-        List<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId);
-        return dtoMapper.toWatchlistDtoList(watchlists);
+    public Page<WatchlistDto> getWatchlistByUserId(UUID userId, Pageable pageable) {
+        Page<Watchlist> watchlists = watchlistRepository.findByUserIdOrderByAddedAtDesc(userId, pageable);
+        return watchlists.map(dtoMapper::toWatchlistDto);
     }
     
     @Override
     @Transactional(readOnly = true)
-    public List<ContentDto> getRecommendedContentForUser(UUID userId) {
+    public Page<ContentDto> getRecommendedContentForUser(UUID userId, Pageable pageable) {
         // TODO: Implement recommendation algorithm
         // For now, return recent available content
-        List<Content> recentContent = contentRepository.findAvailableContentOrderByReleaseDateDesc();
-        return dtoMapper.toContentDtoList(recentContent);
+        Page<Content> recentContent = contentRepository.findAvailableContentOrderByReleaseDateDesc(pageable);
+        return recentContent.map(dtoMapper::toContentDto);
     }
     
     @Override

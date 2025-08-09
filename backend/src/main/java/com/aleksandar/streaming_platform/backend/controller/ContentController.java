@@ -6,13 +6,14 @@ import com.aleksandar.streaming_platform.backend.dto.EpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.GenreDto;
 import com.aleksandar.streaming_platform.backend.service.ContentService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -39,58 +40,59 @@ public class ContentController {
     }
     
     @GetMapping
-    public ResponseEntity<List<ContentDto>> getAllContent() {
-        List<ContentDto> content = contentService.getAllContent();
+    public ResponseEntity<Page<ContentDto>> getAllContent(Pageable pageable) {
+        Page<ContentDto> content = contentService.getAllContent(pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/available")
-    public ResponseEntity<List<ContentDto>> getAvailableContent() {
-        List<ContentDto> content = contentService.getAvailableContent();
+    public ResponseEntity<Page<ContentDto>> getAvailableContent(Pageable pageable) {
+        Page<ContentDto> content = contentService.getAvailableContent(pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/search")
-    public ResponseEntity<List<ContentDto>> searchContent(@RequestParam String title) {
-        List<ContentDto> content = contentService.searchContentByTitle(title);
+    public ResponseEntity<Page<ContentDto>> searchContent(@RequestParam String title, Pageable pageable) {
+        Page<ContentDto> content = contentService.searchContentByTitle(title, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/by-type")
-    public ResponseEntity<List<ContentDto>> getContentByType(@RequestParam String type) {
-        List<ContentDto> content = contentService.getContentByType(type);
+    public ResponseEntity<Page<ContentDto>> getContentByType(@RequestParam String type, Pageable pageable) {
+        Page<ContentDto> content = contentService.getContentByType(type, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/by-genre")
-    public ResponseEntity<List<ContentDto>> getContentByGenre(@RequestParam String genre) {
-        List<ContentDto> content = contentService.getContentByGenre(genre);
+    public ResponseEntity<Page<ContentDto>> getContentByGenre(@RequestParam String genre, Pageable pageable) {
+        Page<ContentDto> content = contentService.getContentByGenre(genre, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/by-language")
-    public ResponseEntity<List<ContentDto>> getContentByLanguage(@RequestParam String language) {
-        List<ContentDto> content = contentService.getContentByLanguage(language);
+    public ResponseEntity<Page<ContentDto>> getContentByLanguage(@RequestParam String language, Pageable pageable) {
+        Page<ContentDto> content = contentService.getContentByLanguage(language, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/by-date-range")
-    public ResponseEntity<List<ContentDto>> getContentByDateRange(
+    public ResponseEntity<Page<ContentDto>> getContentByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<ContentDto> content = contentService.getContentByDateRange(startDate, endDate);
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Pageable pageable) {
+        Page<ContentDto> content = contentService.getContentByDateRange(startDate, endDate, pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/recent")
-    public ResponseEntity<List<ContentDto>> getRecentContent() {
-        List<ContentDto> content = contentService.getRecentContent();
+    public ResponseEntity<Page<ContentDto>> getRecentContent(Pageable pageable) {
+        Page<ContentDto> content = contentService.getRecentContent(pageable);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/popular")
-    public ResponseEntity<List<ContentDto>> getPopularContent() {
-        List<ContentDto> content = contentService.getPopularContent();
+    public ResponseEntity<Page<ContentDto>> getPopularContent(Pageable pageable) {
+        Page<ContentDto> content = contentService.getPopularContent(pageable);
         return ResponseEntity.ok(content);
     }
     
@@ -116,14 +118,14 @@ public class ContentController {
     }
     
     @GetMapping("/{id}/episodes")
-    public ResponseEntity<List<EpisodeDto>> getContentEpisodes(@PathVariable UUID id) {
-        List<EpisodeDto> episodes = contentService.getEpisodesByContentId(id);
+    public ResponseEntity<Page<EpisodeDto>> getContentEpisodes(@PathVariable UUID id, Pageable pageable) {
+        Page<EpisodeDto> episodes = contentService.getEpisodesByContentId(id, pageable);
         return ResponseEntity.ok(episodes);
     }
     
     @GetMapping("/{id}/genres")
-    public ResponseEntity<List<GenreDto>> getContentGenres(@PathVariable UUID id) {
-        List<GenreDto> genres = contentService.getGenresByContentId(id);
+    public ResponseEntity<Page<GenreDto>> getContentGenres(@PathVariable UUID id, Pageable pageable) {
+        Page<GenreDto> genres = contentService.getGenresByContentId(id, pageable);
         return ResponseEntity.ok(genres);
     }
     
@@ -140,8 +142,8 @@ public class ContentController {
     }
     
     @GetMapping("/recommendations")
-    public ResponseEntity<List<ContentDto>> getRecommendations(@RequestParam UUID userId) {
-        List<ContentDto> recommendations = contentService.getContentRecommendations(userId);
+    public ResponseEntity<Page<ContentDto>> getRecommendations(@RequestParam UUID userId, Pageable pageable) {
+        Page<ContentDto> recommendations = contentService.getContentRecommendations(userId, pageable);
         return ResponseEntity.ok(recommendations);
     }
 }

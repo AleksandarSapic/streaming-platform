@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/v1/episodes")
@@ -36,22 +38,23 @@ public class EpisodeController {
     }
     
     @GetMapping
-    public ResponseEntity<List<EpisodeDto>> getAllEpisodes() {
-        List<EpisodeDto> episodes = episodeService.getAllEpisodes();
+    public ResponseEntity<Page<EpisodeDto>> getAllEpisodes(Pageable pageable) {
+        Page<EpisodeDto> episodes = episodeService.getAllEpisodes(pageable);
         return ResponseEntity.ok(episodes);
     }
     
     @GetMapping("/by-content/{contentId}")
-    public ResponseEntity<List<EpisodeDto>> getEpisodesByContent(@PathVariable UUID contentId) {
-        List<EpisodeDto> episodes = episodeService.getEpisodesByContentIdOrderedBySeasonAndEpisode(contentId);
+    public ResponseEntity<Page<EpisodeDto>> getEpisodesByContent(@PathVariable UUID contentId, Pageable pageable) {
+        Page<EpisodeDto> episodes = episodeService.getEpisodesByContentIdOrderedBySeasonAndEpisode(contentId, pageable);
         return ResponseEntity.ok(episodes);
     }
     
     @GetMapping("/by-content/{contentId}/season/{seasonNumber}")
-    public ResponseEntity<List<EpisodeDto>> getEpisodesByContentAndSeason(
+    public ResponseEntity<Page<EpisodeDto>> getEpisodesByContentAndSeason(
             @PathVariable UUID contentId, 
-            @PathVariable Integer seasonNumber) {
-        List<EpisodeDto> episodes = episodeService.getEpisodesByContentIdAndSeason(contentId, seasonNumber);
+            @PathVariable Integer seasonNumber,
+            Pageable pageable) {
+        Page<EpisodeDto> episodes = episodeService.getEpisodesByContentIdAndSeason(contentId, seasonNumber, pageable);
         return ResponseEntity.ok(episodes);
     }
     

@@ -8,8 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/v1/user-roles")
@@ -42,8 +43,8 @@ public class UserRoleController {
     }
     
     @GetMapping
-    public ResponseEntity<List<UserRoleDto>> getAllUserRoles() {
-        List<UserRoleDto> userRoles = userRoleService.getAllUserRoles();
+    public ResponseEntity<Page<UserRoleDto>> getAllUserRoles(Pageable pageable) {
+        Page<UserRoleDto> userRoles = userRoleService.getAllUserRoles(pageable);
         return ResponseEntity.ok(userRoles);
     }
     
@@ -63,8 +64,8 @@ public class UserRoleController {
     }
     
     @GetMapping("/{id}/users")
-    public ResponseEntity<List<UserDto>> getUsersByRole(@PathVariable UUID id) {
-        List<UserDto> users = userRoleService.getUsersByRoleId(id);
+    public ResponseEntity<Page<UserDto>> getUsersByRole(@PathVariable UUID id, Pageable pageable) {
+        Page<UserDto> users = userRoleService.getUsersByRoleId(id, pageable);
         return ResponseEntity.ok(users);
     }
     
