@@ -56,7 +56,7 @@ public class DtoMapper {
         
         return new UserRoleDto(
             userRole.getId(),
-            userRole.getName()
+            userRole.getName().getRoleName()
         );
     }
     
@@ -65,7 +65,7 @@ public class DtoMapper {
         
         UserRole userRole = new UserRole();
         userRole.setId(userRoleDto.id());
-        userRole.setName(userRoleDto.name());
+        userRole.setName(UserRoleType.fromString(userRoleDto.name()));
         return userRole;
     }
     

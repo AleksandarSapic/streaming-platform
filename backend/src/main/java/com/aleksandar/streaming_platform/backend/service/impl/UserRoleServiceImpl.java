@@ -8,6 +8,7 @@ import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundExcep
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.UserRole;
 import com.aleksandar.streaming_platform.backend.model.User;
+import com.aleksandar.streaming_platform.backend.model.UserRoleType;
 import com.aleksandar.streaming_platform.backend.repository.UserRoleRepository;
 import com.aleksandar.streaming_platform.backend.repository.UserRepository;
 import com.aleksandar.streaming_platform.backend.service.UserRoleService;
@@ -36,12 +37,14 @@ public class UserRoleServiceImpl implements UserRoleService {
     
     @Override
     public UserRoleDto createUserRole(UserRoleDto userRoleDto) {
-        if (userRoleRepository.existsByName(userRoleDto.name())) {
+        UserRoleType roleType = UserRoleType.fromString(userRoleDto.name());
+        
+        if (userRoleRepository.existsByName(roleType)) {
             throw new DuplicateResourceException("UserRole", "name", userRoleDto.name());
         }
         
         UserRole userRole = new UserRole();
-        userRole.setName(userRoleDto.name());
+        userRole.setName(roleType);
         UserRole savedUserRole = userRoleRepository.save(userRole);
         return dtoMapper.toUserRoleDto(savedUserRole);
     }
@@ -56,8 +59,13 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     @Transactional(readOnly = true)
     public Optional<UserRoleDto> getUserRoleByName(String name) {
-        return userRoleRepository.findByName(name)
-                .map(dtoMapper::toUserRoleDto);
+        try {
+            UserRoleType roleType = UserRoleType.fromString(name);
+            return userRoleRepository.findByName(roleType)
+                    .map(dtoMapper::toUserRoleDto);
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
     
     @Override
@@ -72,13 +80,15 @@ public class UserRoleServiceImpl implements UserRoleService {
         UserRole existingUserRole = userRoleRepository.findById(userRoleDto.id())
                 .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", userRoleDto.id()));
         
+        UserRoleType newRoleType = UserRoleType.fromString(userRoleDto.name());
+        
         // Check if new name conflicts with existing role (excluding current role)
-        if (!existingUserRole.getName().equals(userRoleDto.name()) && 
-            userRoleRepository.existsByName(userRoleDto.name())) {
+        if (!existingUserRole.getName().equals(newRoleType) && 
+            userRoleRepository.existsByName(newRoleType)) {
             throw new DuplicateResourceException("UserRole", "name", userRoleDto.name());
         }
         
-        existingUserRole.setName(userRoleDto.name());
+        existingUserRole.setName(newRoleType);
         UserRole savedUserRole = userRoleRepository.save(existingUserRole);
         return dtoMapper.toUserRoleDto(savedUserRole);
     }
@@ -101,27 +111,32 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     @Transactional(readOnly = true)
     public boolean existsByName(String name) {
-        return userRoleRepository.existsByName(name);
+        try {
+            UserRoleType roleType = UserRoleType.fromString(name);
+            return userRoleRepository.existsByName(roleType);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
     
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> getUsersByRoleId(UUID roleId) {
-        List<User> users = userRepository.findByUserRoleName(
-            userRoleRepository.findById(roleId)
+        UserRoleType roleType = userRoleRepository.findById(roleId)
                 .map(UserRole::getName)
-                .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId))
-        );
+                .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId));
+        
+        List<User> users = userRepository.findByUserRoleType(roleType);
         return dtoMapper.toUserDtoList(users);
     }
     
     @Override
     @Transactional(readOnly = true)
     public Long countUsersByRoleId(UUID roleId) {
-        String roleName = userRoleRepository.findById(roleId)
+        UserRoleType roleType = userRoleRepository.findById(roleId)
                 .map(UserRole::getName)
                 .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId));
         
-        return (long) userRepository.findByUserRoleName(roleName).size();
+        return (long) userRepository.findByUserRoleType(roleType).size();
     }
 }

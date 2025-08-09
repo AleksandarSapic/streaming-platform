@@ -4,6 +4,7 @@ import com.aleksandar.streaming_platform.backend.dto.CreateUserDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
 import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.security.AuthorizationService;
 import com.aleksandar.streaming_platform.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,11 @@ import java.util.UUID;
 public class UserController {
     
     private final UserService userService;
+    private final AuthorizationService authorizationService;
     
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthorizationService authorizationService) {
         this.userService = userService;
+        this.authorizationService = authorizationService;
     }
     
     @PostMapping
@@ -31,6 +34,7 @@ public class UserController {
     
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
+        authorizationService.validateUserAccess(id);
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -59,12 +63,14 @@ public class UserController {
         List<UserDto> users = userService.getUsersByRoleName(roleName);
         return ResponseEntity.ok(users);
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDto userDto) {
         if (!id.equals(userDto.id())) {
             return ResponseEntity.badRequest().build();
         }
+
+        authorizationService.validateUserAccess(id);
         UserDto updatedUser = userService.updateUser(userDto);
         return ResponseEntity.ok(updatedUser);
     }
@@ -77,36 +83,42 @@ public class UserController {
     
     @PostMapping("/{id}/assign-role")
     public ResponseEntity<UserDto> assignRole(@PathVariable UUID id, @RequestParam UUID roleId) {
+        authorizationService.validateRoleAssignmentAccess();
         UserDto user = userService.assignUserRole(id, roleId);
         return ResponseEntity.ok(user);
     }
     
     @GetMapping("/{id}/watchlist")
     public ResponseEntity<List<WatchlistDto>> getUserWatchlist(@PathVariable UUID id) {
+        authorizationService.validateWatchlistAccess(id);
         List<WatchlistDto> watchlist = userService.getWatchlistByUserId(id);
         return ResponseEntity.ok(watchlist);
     }
     
     @PostMapping("/{id}/watchlist")
     public ResponseEntity<Void> addToWatchlist(@PathVariable UUID id, @RequestParam UUID contentId) {
+        authorizationService.validateWatchlistAccess(id);
         userService.addToWatchlist(id, contentId);
         return ResponseEntity.noContent().build();
     }
     
     @DeleteMapping("/{id}/watchlist/{contentId}")
     public ResponseEntity<Void> removeFromWatchlist(@PathVariable UUID id, @PathVariable UUID contentId) {
+        authorizationService.validateWatchlistAccess(id);
         userService.removeFromWatchlist(id, contentId);
         return ResponseEntity.noContent().build();
     }
     
     @GetMapping("/{id}/recommendations")
     public ResponseEntity<List<ContentDto>> getRecommendations(@PathVariable UUID id) {
+        authorizationService.validateUserAccess(id);
         List<ContentDto> recommendations = userService.getRecommendedContentForUser(id);
         return ResponseEntity.ok(recommendations);
     }
     
     @GetMapping("/{id}/watchlist/check")
     public ResponseEntity<Boolean> isContentInWatchlist(@PathVariable UUID id, @RequestParam UUID contentId) {
+        authorizationService.validateWatchlistAccess(id);
         boolean isInWatchlist = userService.isContentInUserWatchlist(id, contentId);
         return ResponseEntity.ok(isInWatchlist);
     }

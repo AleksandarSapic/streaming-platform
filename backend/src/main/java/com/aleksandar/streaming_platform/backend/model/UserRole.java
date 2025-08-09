@@ -12,8 +12,9 @@ public class UserRole {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     
+    @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    private UserRoleType name;
     
     @OneToMany(mappedBy = "userRole", fetch = FetchType.LAZY)
     private List<User> users;
@@ -26,11 +27,11 @@ public class UserRole {
         this.id = id;
     }
     
-    public String getName() {
+    public UserRoleType getName() {
         return name;
     }
     
-    public void setName(String name) {
+    public void setName(UserRoleType name) {
         this.name = name;
     }
     

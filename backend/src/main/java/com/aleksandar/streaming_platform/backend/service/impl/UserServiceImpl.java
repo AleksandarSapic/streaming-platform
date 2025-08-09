@@ -4,9 +4,14 @@ import com.aleksandar.streaming_platform.backend.dto.UserDto;
 import com.aleksandar.streaming_platform.backend.dto.CreateUserDto;
 import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.exception.AuthenticationException;
+import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
+import com.aleksandar.streaming_platform.backend.exception.DuplicateResourceException;
+import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.User;
 import com.aleksandar.streaming_platform.backend.model.UserRole;
+import com.aleksandar.streaming_platform.backend.model.UserRoleType;
 import com.aleksandar.streaming_platform.backend.model.Watchlist;
 import com.aleksandar.streaming_platform.backend.model.Content;
 import com.aleksandar.streaming_platform.backend.model.WatchlistId;
@@ -15,6 +20,8 @@ import com.aleksandar.streaming_platform.backend.repository.UserRoleRepository;
 import com.aleksandar.streaming_platform.backend.repository.WatchlistRepository;
 import com.aleksandar.streaming_platform.backend.repository.ContentRepository;
 import com.aleksandar.streaming_platform.backend.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,23 +38,41 @@ public class UserServiceImpl implements UserService {
     private final WatchlistRepository watchlistRepository;
     private final ContentRepository contentRepository;
     private final DtoMapper dtoMapper;
+    private final PasswordEncoder passwordEncoder;
     
     public UserServiceImpl(UserRepository userRepository,
                           UserRoleRepository userRoleRepository,
                           WatchlistRepository watchlistRepository,
                           ContentRepository contentRepository,
-                          DtoMapper dtoMapper) {
+                          DtoMapper dtoMapper,
+                          PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.watchlistRepository = watchlistRepository;
         this.contentRepository = contentRepository;
         this.dtoMapper = dtoMapper;
+        this.passwordEncoder = passwordEncoder;
     }
     
     @Override
     public UserDto createUser(CreateUserDto createUserDto) {
+        if (userRepository.existsByEmail(createUserDto.email())) {
+            throw new DuplicateResourceException("User", "email", createUserDto.email());
+        }
+        
         User user = dtoMapper.toUserEntity(createUserDto);
-        // TODO: Hash password before saving
+        user.setHashedPassword(passwordEncoder.encode(createUserDto.password()));
+        
+        if (user.getUserRole() == null) {
+            UserRole defaultRole = userRoleRepository.findByName(UserRoleType.USER)
+                    .orElseGet(() -> {
+                        UserRole newRole = new UserRole();
+                        newRole.setName(UserRoleType.USER);
+                        return userRoleRepository.save(newRole);
+                    });
+            user.setUserRole(defaultRole);
+        }
+        
         User savedUser = userRepository.save(user);
         return dtoMapper.toUserDto(savedUser);
     }
@@ -97,7 +122,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto) {
         User existingUser = userRepository.findById(userDto.id())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDto.id()));
         
         existingUser.setFullName(userDto.fullName());
         existingUser.setEmail(userDto.email());
@@ -110,7 +135,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User", "id", id);
         }
         userRepository.deleteById(id);
     }
@@ -125,21 +150,19 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean validateUserCredentials(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
-        // TODO: Implement password verification
-        return user.map(value -> value.getHashedPassword().equals(password)).orElse(false);
+        return user.map(value -> passwordEncoder.matches(password, value.getHashedPassword())).orElse(false);
     }
     
     @Override
     public UserDto changeUserPassword(UUID userId, String oldPassword, String newPassword) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         
-        // TODO: Verify old password and hash new password
-        if (!user.getHashedPassword().equals(oldPassword)) {
-            throw new RuntimeException("Invalid old password");
+        if (!passwordEncoder.matches(oldPassword, user.getHashedPassword())) {
+            throw new AuthenticationException("Invalid old password");
         }
         
-        user.setHashedPassword(newPassword);
+        user.setHashedPassword(passwordEncoder.encode(newPassword));
         User savedUser = userRepository.save(user);
         return dtoMapper.toUserDto(savedUser);
     }
@@ -147,10 +170,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto assignUserRole(UUID userId, UUID roleId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         
         UserRole userRole = userRoleRepository.findById(roleId)
-                .orElseThrow(() -> new RuntimeException("User role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("UserRole", "id", roleId));
         
         user.setUserRole(userRole);
         User savedUser = userRepository.save(user);
@@ -176,7 +199,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addToWatchlist(UUID userId, UUID contentId) {
         if (watchlistRepository.existsByUserIdAndContentId(userId, contentId)) {
-            throw new RuntimeException("Content already in watchlist");
+            throw new BusinessLogicException("Content already in watchlist");
         }
         
         Watchlist watchlist = new Watchlist();
@@ -188,7 +211,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeFromWatchlist(UUID userId, UUID contentId) {
         if (!watchlistRepository.existsByUserIdAndContentId(userId, contentId)) {
-            throw new RuntimeException("Content not in watchlist");
+            throw new BusinessLogicException("Content not in watchlist");
         }
         watchlistRepository.deleteByUserIdAndContentId(userId, contentId);
     }

@@ -3,6 +3,7 @@ package com.aleksandar.streaming_platform.backend.controller;
 import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
+import com.aleksandar.streaming_platform.backend.security.AuthorizationService;
 import com.aleksandar.streaming_platform.backend.service.WatchlistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,49 +17,58 @@ import java.util.UUID;
 public class WatchlistController {
     
     private final WatchlistService watchlistService;
+    private final AuthorizationService authorizationService;
     
-    public WatchlistController(WatchlistService watchlistService) {
+    public WatchlistController(WatchlistService watchlistService, AuthorizationService authorizationService) {
         this.watchlistService = watchlistService;
+        this.authorizationService = authorizationService;
     }
     
     @PostMapping
     public ResponseEntity<WatchlistDto> addToWatchlist(@RequestParam UUID userId, @RequestParam UUID contentId) {
+        authorizationService.validateWatchlistAccess(userId);
         WatchlistDto watchlist = watchlistService.addToWatchlist(userId, contentId);
         return new ResponseEntity<>(watchlist, HttpStatus.CREATED);
     }
     
     @DeleteMapping
     public ResponseEntity<Void> removeFromWatchlist(@RequestParam UUID userId, @RequestParam UUID contentId) {
+        authorizationService.validateWatchlistAccess(userId);
         watchlistService.removeFromWatchlist(userId, contentId);
         return ResponseEntity.noContent().build();
     }
     
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<WatchlistDto>> getUserWatchlist(@PathVariable UUID userId) {
+        authorizationService.validateWatchlistAccess(userId);
         List<WatchlistDto> watchlist = watchlistService.getWatchlistByUserIdOrderedByDate(userId);
         return ResponseEntity.ok(watchlist);
     }
     
     @GetMapping("/user/{userId}/content")
     public ResponseEntity<List<ContentDto>> getUserWatchlistContent(@PathVariable UUID userId) {
+        authorizationService.validateWatchlistAccess(userId);
         List<ContentDto> content = watchlistService.getWatchlistContentByUserId(userId);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/content/{contentId}/users")
     public ResponseEntity<List<UserDto>> getUsersByContentInWatchlist(@PathVariable UUID contentId) {
+        authorizationService.validateAdminAccess();
         List<UserDto> users = watchlistService.getUsersByContentInWatchlist(contentId);
         return ResponseEntity.ok(users);
     }
     
     @GetMapping("/check")
     public ResponseEntity<Boolean> isContentInWatchlist(@RequestParam UUID userId, @RequestParam UUID contentId) {
+        authorizationService.validateWatchlistAccess(userId);
         boolean isInWatchlist = watchlistService.isContentInUserWatchlist(userId, contentId);
         return ResponseEntity.ok(isInWatchlist);
     }
     
     @GetMapping("/user/{userId}/count")
     public ResponseEntity<Long> getUserWatchlistCount(@PathVariable UUID userId) {
+        authorizationService.validateWatchlistAccess(userId);
         Long count = watchlistService.getWatchlistCountByUserId(userId);
         return ResponseEntity.ok(count);
     }
@@ -71,24 +81,29 @@ public class WatchlistController {
     
     @DeleteMapping("/user/{userId}/clear")
     public ResponseEntity<Void> clearUserWatchlist(@PathVariable UUID userId) {
+        authorizationService.validateWatchlistAccess(userId);
         watchlistService.clearUserWatchlist(userId);
         return ResponseEntity.noContent().build();
     }
     
     @GetMapping("/user/{userId}/content/by-genre")
     public ResponseEntity<List<ContentDto>> getWatchlistByGenre(@PathVariable UUID userId, @RequestParam String genre) {
+        authorizationService.validateWatchlistAccess(userId);
         List<ContentDto> content = watchlistService.getWatchlistContentByUserIdAndGenre(userId, genre);
         return ResponseEntity.ok(content);
     }
     
     @GetMapping("/user/{userId}/content/by-type")
     public ResponseEntity<List<ContentDto>> getWatchlistByType(@PathVariable UUID userId, @RequestParam String type) {
+        authorizationService.validateWatchlistAccess(userId);
         List<ContentDto> content = watchlistService.getWatchlistContentByUserIdAndType(userId, type);
         return ResponseEntity.ok(content);
     }
     
     @PostMapping("/transfer")
     public ResponseEntity<Boolean> transferWatchlist(@RequestParam UUID fromUserId, @RequestParam UUID toUserId) {
+        authorizationService.validateWatchlistAccess(fromUserId);
+        authorizationService.validateWatchlistAccess(toUserId);
         boolean success = watchlistService.transferWatchlist(fromUserId, toUserId);
         return ResponseEntity.ok(success);
     }

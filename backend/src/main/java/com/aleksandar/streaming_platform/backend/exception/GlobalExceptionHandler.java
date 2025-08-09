@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -94,7 +93,7 @@ public class GlobalExceptionHandler {
     }
 
     // Spring Security authentication exceptions
-    @ExceptionHandler(AuthenticationException.class)
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleSpringAuthenticationException(
             AuthenticationException ex, HttpServletRequest request) {
         logger.error("Spring Security authentication error: {}", ex.getMessage());
