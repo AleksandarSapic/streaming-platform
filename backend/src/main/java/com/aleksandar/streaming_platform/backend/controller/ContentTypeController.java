@@ -1,16 +1,16 @@
 package com.aleksandar.streaming_platform.backend.controller;
 
-import com.aleksandar.streaming_platform.backend.dto.ContentTypeDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.dto.ContentTypeDto;
 import com.aleksandar.streaming_platform.backend.service.ContentTypeService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/v1/content-types")

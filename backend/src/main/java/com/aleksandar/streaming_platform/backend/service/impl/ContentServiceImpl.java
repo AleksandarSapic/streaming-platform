@@ -7,17 +7,12 @@ import com.aleksandar.streaming_platform.backend.dto.GenreDto;
 import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
 import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
-import com.aleksandar.streaming_platform.backend.model.Content;
-import com.aleksandar.streaming_platform.backend.model.ContentType;
-import com.aleksandar.streaming_platform.backend.model.Episode;
-import com.aleksandar.streaming_platform.backend.model.Genre;
-import com.aleksandar.streaming_platform.backend.model.ContentGenre;
-import com.aleksandar.streaming_platform.backend.repository.ContentRepository;
-import com.aleksandar.streaming_platform.backend.repository.ContentTypeRepository;
-import com.aleksandar.streaming_platform.backend.repository.EpisodeRepository;
-import com.aleksandar.streaming_platform.backend.repository.GenreRepository;
-import com.aleksandar.streaming_platform.backend.repository.ContentGenreRepository;
+import com.aleksandar.streaming_platform.backend.model.*;
+import com.aleksandar.streaming_platform.backend.repository.*;
 import com.aleksandar.streaming_platform.backend.service.ContentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional

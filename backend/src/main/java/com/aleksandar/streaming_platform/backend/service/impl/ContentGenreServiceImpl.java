@@ -6,11 +6,11 @@ import com.aleksandar.streaming_platform.backend.exception.BusinessLogicExceptio
 import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
 import com.aleksandar.streaming_platform.backend.model.Content;
-import com.aleksandar.streaming_platform.backend.model.Genre;
 import com.aleksandar.streaming_platform.backend.model.ContentGenre;
+import com.aleksandar.streaming_platform.backend.model.Genre;
+import com.aleksandar.streaming_platform.backend.repository.ContentGenreRepository;
 import com.aleksandar.streaming_platform.backend.repository.ContentRepository;
 import com.aleksandar.streaming_platform.backend.repository.GenreRepository;
-import com.aleksandar.streaming_platform.backend.repository.ContentGenreRepository;
 import com.aleksandar.streaming_platform.backend.service.ContentGenreService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,6 +1,7 @@
 package com.aleksandar.streaming_platform.backend.model;
 
 import jakarta.persistence.*;
+
 import java.util.UUID;
 
 @Entity

@@ -1,26 +1,25 @@
 package com.aleksandar.streaming_platform.backend.service.impl;
 
-import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
+import com.aleksandar.streaming_platform.backend.dto.WatchlistDto;
 import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
 import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
-import com.aleksandar.streaming_platform.backend.model.Watchlist;
 import com.aleksandar.streaming_platform.backend.model.Content;
 import com.aleksandar.streaming_platform.backend.model.User;
-import com.aleksandar.streaming_platform.backend.repository.WatchlistRepository;
+import com.aleksandar.streaming_platform.backend.model.Watchlist;
 import com.aleksandar.streaming_platform.backend.repository.ContentRepository;
 import com.aleksandar.streaming_platform.backend.repository.UserRepository;
+import com.aleksandar.streaming_platform.backend.repository.WatchlistRepository;
 import com.aleksandar.streaming_platform.backend.service.WatchlistService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional

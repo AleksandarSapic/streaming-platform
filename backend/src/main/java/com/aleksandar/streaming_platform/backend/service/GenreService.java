@@ -1,8 +1,7 @@
 package com.aleksandar.streaming_platform.backend.service;
 
-import com.aleksandar.streaming_platform.backend.dto.GenreDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
-
+import com.aleksandar.streaming_platform.backend.dto.GenreDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

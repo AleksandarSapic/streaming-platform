@@ -1,8 +1,7 @@
 package com.aleksandar.streaming_platform.backend.service;
 
-import com.aleksandar.streaming_platform.backend.dto.UserRoleDto;
 import com.aleksandar.streaming_platform.backend.dto.UserDto;
-
+import com.aleksandar.streaming_platform.backend.dto.UserRoleDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

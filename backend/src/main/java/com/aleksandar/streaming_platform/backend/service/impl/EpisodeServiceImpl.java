@@ -1,25 +1,24 @@
 package com.aleksandar.streaming_platform.backend.service.impl;
 
-import com.aleksandar.streaming_platform.backend.dto.EpisodeDto;
-import com.aleksandar.streaming_platform.backend.dto.CreateEpisodeDto;
 import com.aleksandar.streaming_platform.backend.dto.ContentDto;
+import com.aleksandar.streaming_platform.backend.dto.CreateEpisodeDto;
+import com.aleksandar.streaming_platform.backend.dto.EpisodeDto;
 import com.aleksandar.streaming_platform.backend.exception.BusinessLogicException;
 import com.aleksandar.streaming_platform.backend.exception.ResourceNotFoundException;
 import com.aleksandar.streaming_platform.backend.mapper.DtoMapper;
-import com.aleksandar.streaming_platform.backend.model.Episode;
 import com.aleksandar.streaming_platform.backend.model.Content;
-import com.aleksandar.streaming_platform.backend.repository.EpisodeRepository;
+import com.aleksandar.streaming_platform.backend.model.Episode;
 import com.aleksandar.streaming_platform.backend.repository.ContentRepository;
+import com.aleksandar.streaming_platform.backend.repository.EpisodeRepository;
 import com.aleksandar.streaming_platform.backend.service.EpisodeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
