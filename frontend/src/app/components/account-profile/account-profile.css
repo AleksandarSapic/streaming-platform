@@ -1,0 +1,59 @@
+.account-card {
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: #666;
+}
+
+.account-details {
+  margin-top: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  font-weight: 400;
+  color: #333;
+  word-break: break-all;
+}
+
+.detail-item mat-icon {
+  color: #666;
+  flex-shrink: 0;
+}
+
+@media (max-width: 576px) {
+  .account-card {
+    margin: 1rem;
+  }
+  
+  .profile-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+  }
+}

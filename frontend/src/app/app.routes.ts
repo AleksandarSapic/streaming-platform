@@ -39,7 +39,7 @@ export const routes: Routes = [
   },
   {
     path: 'account',
-    loadComponent: () => import('./components/browse/browse').then(c => c.Browse),
+    loadComponent: () => import('./components/account-profile/account-profile').then(c => c.AccountProfile),
     canActivate: [authGuard]
   },
   {

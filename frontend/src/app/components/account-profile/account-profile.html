@@ -1,0 +1,59 @@
+<div class="container-fluid d-flex justify-content-center py-5">
+  <div class="col-md-6 col-lg-4">
+    <mat-card class="account-card">
+      <mat-card-header class="d-flex justify-content-center pb-3">
+        <mat-icon class="profile-icon">account_circle</mat-icon>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="account-details">
+          <h4 class="text-center mb-3">Account Details</h4>
+
+          @if (currentUser(); as user) {
+            <div class="detail-item">
+              <mat-icon>person</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Full Name</span>
+                <span class="detail-value">{{ user.fullName }}</span>
+              </div>
+            </div>
+
+            <mat-divider class="my-3"></mat-divider>
+
+            <div class="detail-item">
+              <mat-icon>email</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Email</span>
+                <span class="detail-value">{{ user.email }}</span>
+              </div>
+            </div>
+
+            <mat-divider class="my-3"></mat-divider>
+
+            <div class="detail-item">
+              <mat-icon>badge</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Role</span>
+                <span class="detail-value">{{ user.userRole.name }}</span>
+              </div>
+            </div>
+
+            <mat-divider class="my-3"></mat-divider>
+
+            <div class="detail-item">
+              <mat-icon>public</mat-icon>
+              <div class="detail-content">
+                <span class="detail-label">Country</span>
+                <span class="detail-value">{{ user.country }}</span>
+              </div>
+            </div>
+          } @else {
+            <div class="text-center text-muted">
+              <p>No user information available</p>
+            </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

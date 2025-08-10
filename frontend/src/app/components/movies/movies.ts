@@ -15,7 +15,6 @@ import {ContentService} from '../../services/content.service';
 import {WatchlistService} from '../../services/watchlist.service';
 import {GenreService} from '../../services/genre.service';
 import {ContentSection} from '../content-section/content-section';
-import {Header} from '../header/header';
 import {Content, ContentPage, Genre} from '../../interfaces/content.interface';
 
 @Component({
@@ -33,7 +32,6 @@ import {Content, ContentPage, Genre} from '../../interfaces/content.interface';
     MatSnackBarModule,
     MatChipsModule,
     ContentSection,
-    Header
   ],
   templateUrl: './movies.html',
   styleUrl: './movies.css'

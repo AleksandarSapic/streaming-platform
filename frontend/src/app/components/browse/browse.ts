@@ -1,5 +1,4 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -14,7 +13,6 @@ import {AuthService} from '../../services/auth.service';
 import {ContentService} from '../../services/content.service';
 import {WatchlistService} from '../../services/watchlist.service';
 import {ContentSection} from '../content-section/content-section';
-import {Header} from '../header/header';
 import {Content, ContentPage} from '../../interfaces/content.interface';
 
 @Component({
@@ -31,7 +29,6 @@ import {Content, ContentPage} from '../../interfaces/content.interface';
     MatCardModule,
     MatSnackBarModule,
     ContentSection,
-    Header,
   ],
   templateUrl: './browse.html',
   styleUrl: './browse.css'
