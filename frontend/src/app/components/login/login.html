@@ -1,0 +1,89 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-primary">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+
+      <mat-card class="shadow-lg rounded-4">
+        <mat-card-header class="d-flex flex-column text-center mb-4">
+          <mat-card-title class="d-flex align-items-center justify-content-center">
+            <mat-icon class="me-2 text-primary">play_circle</mat-icon>
+            Streaming Platform
+          </mat-card-title>
+          <mat-card-subtitle>Sign in to your account</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+
+            <!-- Email Field -->
+            <mat-form-field appearance="outline" class="w-100 mb-3">
+              <mat-label>Email</mat-label>
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                required>
+              <mat-icon matSuffix>email</mat-icon>
+              @if (getFieldError('email')) {
+                <mat-error>{{ getFieldError('email') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Password Field -->
+            <mat-form-field appearance="outline" class="w-100 mb-3">
+              <mat-label>Password</mat-label>
+              <input
+                matInput
+                type="password"
+                formControlName="password"
+                placeholder="Enter your password"
+                required>
+              <mat-icon matSuffix>lock</mat-icon>
+              @if (getFieldError('password')) {
+                <mat-error>{{ getFieldError('password') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Error Message -->
+            @if (errorMessage()) {
+              <div class="alert alert-danger mb-3" role="alert">
+                <mat-icon class="me-2">error</mat-icon>
+                {{ errorMessage() }}
+              </div>
+            }
+
+            <!-- Submit Button -->
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="isLoading()"
+              class="w-100 mb-3 d-flex justify-content-center">
+              @if (isLoading()) {
+                <div class="d-flex align-items-center">
+                  <mat-spinner diameter="20" class="me-2"></mat-spinner>
+                  Signing in...
+                </div>
+              } @else {
+                <div class="d-flex align-items-center">
+                  <mat-icon class="me-2">login</mat-icon>
+                  Sign In
+                </div>
+              }
+            </button>
+
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions class="d-flex justify-content-center text-center">
+          <p class="mb-0 text-muted">
+            Don't have an account?
+            <a routerLink="/register" class="text-decoration-none fw-medium">Create one</a>
+          </p>
+        </mat-card-actions>
+
+      </mat-card>
+
+    </div>
+  </div>
+</div>

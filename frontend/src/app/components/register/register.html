@@ -1,0 +1,147 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-primary">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+
+      <mat-card class="shadow-lg rounded-4">
+        <mat-card-header class="d-flex flex-column text-center mb-4">
+          <mat-card-title class="d-flex align-items-center justify-content-center">
+            <mat-icon class="me-2 text-primary">person_add</mat-icon>
+            Join Streaming Platform
+          </mat-card-title>
+          <mat-card-subtitle>Create your account</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+
+            <!-- Full Name Field -->
+            <mat-form-field appearance="outline" class="w-100 mb-3">
+              <mat-label>Full Name</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="fullName"
+                placeholder="Enter your full name"
+                required>
+              <mat-icon matSuffix>person</mat-icon>
+              @if (getFieldError('fullName')) {
+                <mat-error>{{ getFieldError('fullName') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Email Field -->
+            <mat-form-field appearance="outline" class="w-100 mb-3">
+              <mat-label>Email</mat-label>
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="Enter your email"
+                required>
+              <mat-icon matSuffix>email</mat-icon>
+              @if (getFieldError('email')) {
+                <mat-error>{{ getFieldError('email') }}</mat-error>
+              } @else if (emailExists() === false && registerForm.get('email')?.valid) {
+                <mat-hint class="text-success">
+                  <mat-icon class="me-1">check_circle</mat-icon>
+                  Email available
+                </mat-hint>
+              }
+            </mat-form-field>
+
+            <!-- Country Field -->
+            <mat-form-field appearance="outline" class="w-100 mb-3">
+              <mat-label>Country</mat-label>
+              <mat-select formControlName="country" required>
+                <mat-option value="">Select your country</mat-option>
+                <mat-option value="Serbia">Serbia</mat-option>
+                <mat-option value="United States">United States</mat-option>
+                <mat-option value="Canada">Canada</mat-option>
+                <mat-option value="United Kingdom">United Kingdom</mat-option>
+                <mat-option value="Germany">Germany</mat-option>
+                <mat-option value="France">France</mat-option>
+                <mat-option value="Australia">Australia</mat-option>
+                <mat-option value="Japan">Japan</mat-option>
+                <mat-option value="India">India</mat-option>
+                <mat-option value="Brazil">Brazil</mat-option>
+                <mat-option value="Other">Other</mat-option>
+              </mat-select>
+              <mat-icon matSuffix>public</mat-icon>
+              @if (getFieldError('country')) {
+                <mat-error>{{ getFieldError('country') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Password Field -->
+            <mat-form-field appearance="outline" class="w-100 mb-3">
+              <mat-label>Password</mat-label>
+              <input
+                matInput
+                type="password"
+                formControlName="password"
+                placeholder="Enter your password"
+                required>
+              <mat-icon matSuffix>lock</mat-icon>
+              @if (getFieldError('password')) {
+                <mat-error>{{ getFieldError('password') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Confirm Password Field -->
+            <mat-form-field appearance="outline" class="w-100 mb-3">
+              <mat-label>Confirm Password</mat-label>
+              <input
+                matInput
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Confirm your password"
+                required>
+              <mat-icon matSuffix>lock_outline</mat-icon>
+              @if (getFieldError('confirmPassword')) {
+                <mat-error>{{ getFieldError('confirmPassword') }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Error Message -->
+            @if (errorMessage()) {
+              <div class="alert alert-danger mb-3" role="alert">
+                <mat-icon class="me-2">error</mat-icon>
+                {{ errorMessage() }}
+              </div>
+            }
+
+            <!-- Submit Button -->
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="isLoading() || emailExists() === true"
+              class="w-100 mb-3 d-flex justify-content-center">
+              @if (isLoading()) {
+                <div class="d-flex align-items-center">
+                  <mat-spinner diameter="20" class="me-2"></mat-spinner>
+                  Creating Account...
+                </div>
+              } @else {
+                <div class="d-flex align-items-center">
+                  <mat-icon class="me-2">person_add</mat-icon>
+                  Create Account
+                </div>
+              }
+            </button>
+
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions class="d-flex justify-content-center text-center">
+          <p class="mb-0 text-muted">
+            Already have an account?
+            <a routerLink="/login" class="text-decoration-none fw-medium">Sign in</a>
+          </p>
+        </mat-card-actions>
+
+      </mat-card>
+
+    </div>
+  </div>
+</div>
