@@ -1,38 +1,37 @@
-<mat-toolbar class="d-flex justify-content-between p-5 bg-primary-subtle">
+<mat-toolbar class="d-flex justify-content-between p-5 shadow">
   <span class="navbar-brand" [routerLink]="['/browse']">StreamPlatform</span>
 
   <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-primary-subtle">
+    <nav class="navbar navbar-expand-lg navbar-light">
       <ul class="navbar-nav">
         <li class="nav-item">
           <a [routerLink]="['/browse']"
-             [routerLinkActive]="['active']"
-             class="nav-link">Home</a>
+             [routerLinkActive]="['active', 'border-bottom', 'border-3']"
+             class="nav-link rounded">Home</a>
         </li>
         <li class="nav-item">
           <a [routerLink]="['/movies']"
-             [routerLinkActive]="['active']"
-             class="nav-link">Movies</a>
+             [routerLinkActive]="['active', 'border-bottom', 'border-3']"
+             class="nav-link rounded">Movies</a>
         </li>
         <li class="nav-item">
           <a [routerLink]="['/series']"
-             [routerLinkActive]="['active']"
-             class="nav-link">Shows</a>
+             [routerLinkActive]="['active', 'border-bottom', 'border-3']"
+             class="nav-link rounded">Shows</a>
         </li>
         <li class="nav-item">
           <a [routerLink]="['/my-list']"
-             [routerLinkActive]="['active']"
-             class="nav-link">My List</a>
+             [routerLinkActive]="['active', 'border-bottom', 'border-3']"
+             class="nav-link rounded">My List</a>
         </li>
       </ul>
     </nav>
   </div>
 
   <div class="d-flex align-items-center gap-2">
-    <mat-form-field appearance="outline">
+    <button mat-icon-button>
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput placeholder="Search...">
-    </mat-form-field>
+    </button>
 
     <button mat-icon-button [matMenuTriggerFor]="profileMenu">
       <mat-icon>account_circle</mat-icon>
@@ -44,7 +43,7 @@
       </div>
       <mat-divider></mat-divider>
       <a mat-menu-item [routerLink]="['/account']">
-        <mat-icon>person</mat-icon>
+        <mat-icon>person_outline</mat-icon>
         <span>Visit Profile</span>
       </a>
       <button mat-menu-item (click)="logout()">
