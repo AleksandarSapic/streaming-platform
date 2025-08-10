@@ -13,6 +13,7 @@ import {CommonModule} from '@angular/common';
 import {AuthService} from '../../services/auth.service';
 import {ContentService} from '../../services/content.service';
 import {WatchlistService} from '../../services/watchlist.service';
+import {ContentSection} from '../content-section/content-section';
 import {Content, ContentPage} from '../../interfaces/content.interface';
 
 @Component({
@@ -28,6 +29,7 @@ import {Content, ContentPage} from '../../interfaces/content.interface';
     MatDividerModule,
     MatCardModule,
     MatSnackBarModule,
+    ContentSection,
     RouterLink,
     RouterLinkActive,
   ],

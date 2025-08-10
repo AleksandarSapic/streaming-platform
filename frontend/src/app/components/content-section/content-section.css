@@ -1,0 +1,22 @@
+.content-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.content-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.content-thumbnail {
+  height: 300px;
+  object-fit: cover;
+}
+
+.nav-arrow {
+  transition: all 0.3s ease;
+}
+
+.nav-arrow:not([disabled]):hover {
+  background-color: rgba(33, 150, 243, 0.1);
+  transform: scale(1.1);
+}
