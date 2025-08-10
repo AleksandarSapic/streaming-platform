@@ -1,26 +1,34 @@
 <mat-toolbar class="d-flex justify-content-between p-5 bg-primary-subtle">
-  <div>
-    <a class="navbar-brand" [routerLink]="['/browse']">StreamPlatform</a>
-  </div>
+  <span class="navbar-brand" [routerLink]="['/browse']">StreamPlatform</span>
 
   <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a [routerLink]="['/browse']"
-         [routerLinkActive]="['active']"
-         class="nav-link">Home</a>
-      <a [routerLink]="['/movies']"
-         [routerLinkActive]="['active']"
-         class="nav-link">Movies</a>
-      <a [routerLink]="['/series']"
-         [routerLinkActive]="['active']"
-         class="nav-link">Shows</a>
-      <a [routerLink]="['/my-list']"
-         [routerLinkActive]="['active']"
-         class="nav-link">My List</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary-subtle">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a [routerLink]="['/browse']"
+             [routerLinkActive]="['active']"
+             class="nav-link">Home</a>
+        </li>
+        <li class="nav-item active">
+          <a [routerLink]="['/movies']"
+             [routerLinkActive]="['active']"
+             class="nav-link">Movies</a>
+        </li>
+        <li class="nav-item active">
+          <a [routerLink]="['/series']"
+             [routerLinkActive]="['active']"
+             class="nav-link">Shows</a>
+        </li>
+        <li class="nav-item active">
+          <a [routerLink]="['/my-list']"
+             [routerLinkActive]="['active']"
+             class="nav-link">My List</a>
+        </li>
+      </ul>
     </nav>
   </div>
 
-  <div class="d-flex align-items-center">
+  <div class="d-flex align-items-center gap-2">
     <mat-form-field appearance="outline">
       <mat-icon matPrefix>search</mat-icon>
       <input matInput placeholder="Search...">
@@ -46,3 +54,175 @@
     </mat-menu>
   </div>
 </mat-toolbar>
+
+<!-- Popular Content Section -->
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Popular Content</h2>
+    <div class="d-flex gap-2">
+      <button 
+        mat-icon-button 
+        [disabled]="!canGoPrevious() || isLoading()"
+        (click)="previousPage()"
+        class="nav-arrow">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button 
+        mat-icon-button 
+        [disabled]="!canGoNext() || isLoading()"
+        (click)="nextPage()"
+        class="nav-arrow">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center p-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="row g-3">
+      @for (content of popularContent(); track content.id) {
+        <div class="col-md-4 col-lg-2">
+          <mat-card class="content-card h-100 position-relative">
+            <!-- Three dots menu -->
+            <button 
+              mat-icon-button 
+              [matMenuTriggerFor]="popularContentMenu"
+              class="position-absolute top-0 end-0 m-2 text-white bg-dark bg-opacity-75 rounded-circle"
+              style="z-index: 10;">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            
+            <mat-menu #popularContentMenu="matMenu">
+              <button mat-menu-item (click)="addToMyList(content.id)">
+                <mat-icon>playlist_add</mat-icon>
+                <span>Add to My List</span>
+              </button>
+            </mat-menu>
+
+            <img 
+              mat-card-image 
+              [src]="content.thumbnailUrl" 
+              [alt]="content.title"
+              class="content-thumbnail">
+            <mat-card-content class="p-3">
+              <h6 class="card-title fw-bold mb-2">{{ content.title }}</h6>
+              <p class="text-muted small mb-2">{{ content.contentType.name }} • {{ content.releaseDate | date:'yyyy' }}</p>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                @for (genre of content.genres; track genre.id) {
+                  <span class="badge bg-secondary small">{{ genre.name }}</span>
+                }
+              </div>
+              <p class="card-text small text-truncate">{{ content.description }}</p>
+            </mat-card-content>
+            <mat-card-actions class="p-3 pt-0">
+              <button mat-raised-button color="primary" class="w-100">
+                <mat-icon class="me-1">play_arrow</mat-icon>
+                Watch Now
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Pagination Info -->
+  @if (!isLoading() && popularContent().length > 0) {
+    <div class="d-flex justify-content-center mt-4">
+      <small class="text-muted">
+        Page {{ currentPage() + 1 }} of {{ totalPages() }}
+      </small>
+    </div>
+  }
+</div>
+
+<!-- Recent Content Section -->
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Recent Content</h2>
+    <div class="d-flex gap-2">
+      <button 
+        mat-icon-button 
+        [disabled]="!canGoPreviousRecent() || recentIsLoading()"
+        (click)="previousRecentPage()"
+        class="nav-arrow">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button 
+        mat-icon-button 
+        [disabled]="!canGoNextRecent() || recentIsLoading()"
+        (click)="nextRecentPage()"
+        class="nav-arrow">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (recentIsLoading()) {
+    <div class="d-flex justify-content-center p-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="row g-3">
+      @for (content of recentContent(); track content.id) {
+        <div class="col-md-4 col-lg-2">
+          <mat-card class="content-card h-100 position-relative">
+            <!-- Three dots menu -->
+            <button 
+              mat-icon-button 
+              [matMenuTriggerFor]="recentContentMenu"
+              class="position-absolute top-0 end-0 m-2 text-white bg-dark bg-opacity-75 rounded-circle"
+              style="z-index: 10;">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            
+            <mat-menu #recentContentMenu="matMenu">
+              <button mat-menu-item (click)="addToMyList(content.id)">
+                <mat-icon>playlist_add</mat-icon>
+                <span>Add to My List</span>
+              </button>
+            </mat-menu>
+
+            <img 
+              mat-card-image 
+              [src]="content.thumbnailUrl" 
+              [alt]="content.title"
+              class="content-thumbnail">
+            <mat-card-content class="p-3">
+              <h6 class="card-title fw-bold mb-2">{{ content.title }}</h6>
+              <p class="text-muted small mb-2">{{ content.contentType.name }} • {{ content.releaseDate | date:'yyyy' }}</p>
+              <div class="d-flex flex-wrap gap-1 mb-2">
+                @for (genre of content.genres; track genre.id) {
+                  <span class="badge bg-secondary small">{{ genre.name }}</span>
+                }
+              </div>
+              <p class="card-text small text-truncate">{{ content.description }}</p>
+            </mat-card-content>
+            <mat-card-actions class="p-3 pt-0">
+              <button mat-raised-button color="primary" class="w-100">
+                <mat-icon class="me-1">play_arrow</mat-icon>
+                Watch Now
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Pagination Info -->
+  @if (!recentIsLoading() && recentContent().length > 0) {
+    <div class="d-flex justify-content-center mt-4">
+      <small class="text-muted">
+        Page {{ recentCurrentPage() + 1 }} of {{ recentTotalPages() }}
+      </small>
+    </div>
+  }
+</div>
