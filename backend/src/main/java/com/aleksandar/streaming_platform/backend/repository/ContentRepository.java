@@ -30,9 +30,9 @@ public interface ContentRepository extends JpaRepository<Content, UUID> {
     
     Page<Content> findByReleaseDateAfter(LocalDate date, Pageable pageable);
     
-    @Query("SELECT DISTINCT c FROM Content c JOIN c.contentGenres cg WHERE cg.genre.name = :genreName")
+    @Query("SELECT DISTINCT c FROM Content c JOIN c.contentGenres cg WHERE LOWER(cg.genre.name) = LOWER(:genreName)")
     Page<Content> findByGenreName(@Param("genreName") String genreName, Pageable pageable);
-    
+
     @Query("SELECT c FROM Content c WHERE c.isAvailable = true")
     Page<Content> findAvailableContentOrderByReleaseDateDesc(Pageable pageable);
     
