@@ -1,6 +1,6 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {CommonModule} from '@angular/common';
+import {ActivatedRoute} from '@angular/router';
+import {CommonModule, Location} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -31,7 +31,7 @@ export class ContentDetail implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    private location: Location,
     private contentService: ContentService,
     private watchlistService: WatchlistService,
     private authService: AuthService,
@@ -102,6 +102,6 @@ export class ContentDetail implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/browse']);
+    this.location.back();
   }
 }

@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
@@ -24,7 +24,8 @@ export class ContentSection {
   @Input() isLoading: boolean = false;
   @Input() currentPage: number = 0;
   @Input() totalPages: number = 0;
-  
+  @Input() isWatchlist: boolean = false;
+
   @Output() previousPage = new EventEmitter<void>();
   @Output() nextPage = new EventEmitter<void>();
   @Output() addToList = new EventEmitter<string>();

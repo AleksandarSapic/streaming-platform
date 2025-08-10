@@ -1,0 +1,12 @@
+<app-content-section
+  title="My List"
+  [content]="watchlistContent()"
+  [isLoading]="isLoading()"
+  [currentPage]="currentPage()"
+  [totalPages]="totalPages()"
+  [isWatchlist]="true"
+  (previousPage)="previousPage()"
+  (nextPage)="nextPage()"
+  (addToList)="removeFromList($event)"
+  (moreInfo)="navigateToContentDetail($event)">
+</app-content-section>

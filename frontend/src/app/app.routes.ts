@@ -34,7 +34,7 @@ export const routes: Routes = [
   },
   {
     path: 'my-list',
-    loadComponent: () => import('./components/browse/browse').then(c => c.Browse),
+    loadComponent: () => import('./components/user-list/user-list').then(c => c.UserList),
     canActivate: [authGuard]
   },
   {

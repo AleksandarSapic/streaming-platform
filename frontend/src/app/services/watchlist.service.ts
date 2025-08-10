@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ContentPage } from '../interfaces/content.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class WatchlistService {
     const params = new HttpParams()
       .set('userId', userId)
       .set('contentId', contentId);
-    
+
     return this.http.post(this.API_BASE_URL, null, { params });
   }
 
@@ -22,16 +23,15 @@ export class WatchlistService {
     const params = new HttpParams()
       .set('userId', userId)
       .set('contentId', contentId);
-    
+
     return this.http.delete(this.API_BASE_URL, { params });
   }
 
-  getUserWatchlist(userId: string, page: number = 0, size: number = 10): Observable<any> {
+  getUserWatchlist(userId: string, page: number = 0, size: number = 10): Observable<ContentPage> {
     const params = new HttpParams()
-      .set('userId', userId)
       .set('page', page.toString())
       .set('size', size.toString());
-    
-    return this.http.get(this.API_BASE_URL, { params });
+
+    return this.http.get<ContentPage>(`${this.API_BASE_URL}/user/${userId}/content`, { params });
   }
 }

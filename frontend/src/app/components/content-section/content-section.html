@@ -54,10 +54,17 @@
                   <mat-icon>info_outline</mat-icon>
                   <span>More info</span>
                 </button>
-                <button mat-menu-item (click)="onAddToList(item.id)">
-                  <mat-icon>playlist_add</mat-icon>
-                  <span>Add to My List</span>
-                </button>
+                @if (isWatchlist) {
+                  <button mat-menu-item (click)="onAddToList(item.id)">
+                    <mat-icon>remove</mat-icon>
+                    <span>Remove from My List</span>
+                  </button>
+                } @else {
+                  <button mat-menu-item (click)="onAddToList(item.id)">
+                    <mat-icon>playlist_add</mat-icon>
+                    <span>Add to My List</span>
+                  </button>
+                }
               </mat-menu>
 
               <img
