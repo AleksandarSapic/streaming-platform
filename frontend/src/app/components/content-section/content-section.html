@@ -50,6 +50,10 @@
               </button>
 
               <mat-menu #contentMenu="matMenu">
+                <button mat-menu-item (click)="onMoreInfo(item.id)">
+                  <mat-icon>info_outline</mat-icon>
+                  <span>More info</span>
+                </button>
                 <button mat-menu-item (click)="onAddToList(item.id)">
                   <mat-icon>playlist_add</mat-icon>
                   <span>Add to My List</span>

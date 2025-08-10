@@ -28,6 +28,7 @@ export class ContentSection {
   @Output() previousPage = new EventEmitter<void>();
   @Output() nextPage = new EventEmitter<void>();
   @Output() addToList = new EventEmitter<string>();
+  @Output() moreInfo = new EventEmitter<string>();
 
   canGoPrevious(): boolean {
     return this.currentPage > 0;
@@ -47,5 +48,9 @@ export class ContentSection {
 
   onAddToList(contentId: string) {
     this.addToList.emit(contentId);
+  }
+
+  onMoreInfo(contentId: string) {
+    this.moreInfo.emit(contentId);
   }
 }

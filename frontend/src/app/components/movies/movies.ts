@@ -1,4 +1,5 @@
 import {Component, OnInit, signal} from '@angular/core';
+import {Router} from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -58,6 +59,7 @@ export class Movies implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private router: Router,
     private contentService: ContentService,
     private watchlistService: WatchlistService,
     private genreService: GenreService,
@@ -242,5 +244,9 @@ export class Movies implements OnInit {
         });
       }
     });
+  }
+
+  navigateToContentDetail(contentId: string) {
+    this.router.navigate(['/content', contentId]);
   }
 }

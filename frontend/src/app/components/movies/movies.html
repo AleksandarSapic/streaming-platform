@@ -32,7 +32,8 @@
     [totalPages]="actionTotalPages()"
     (previousPage)="previousActionPage()"
     (nextPage)="nextActionPage()"
-    (addToList)="addToMyList($event)">
+    (addToList)="addToMyList($event)"
+    (moreInfo)="navigateToContentDetail($event)">
   </app-content-section>
 
   <!-- Drama Movies Section -->
@@ -44,7 +45,8 @@
     [totalPages]="dramaTotalPages()"
     (previousPage)="previousDramaPage()"
     (nextPage)="nextDramaPage()"
-    (addToList)="addToMyList($event)">
+    (addToList)="addToMyList($event)"
+    (moreInfo)="navigateToContentDetail($event)">
   </app-content-section>
 } @else {
   <!-- Show filtered content section when specific genre is selected -->
@@ -56,6 +58,7 @@
     [totalPages]="filteredTotalPages()"
     (previousPage)="previousFilteredPage()"
     (nextPage)="nextFilteredPage()"
-    (addToList)="addToMyList($event)">
+    (addToList)="addToMyList($event)"
+    (moreInfo)="navigateToContentDetail($event)">
   </app-content-section>
 }

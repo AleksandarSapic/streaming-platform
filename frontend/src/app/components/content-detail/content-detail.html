@@ -1,0 +1,94 @@
+<div class="container-fluid py-4">
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center p-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    @if (content(); as contentItem) {
+      <div class="row">
+        <!-- Back Button -->
+        <div class="col-12 mb-3">
+          <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+
+        <!-- Content Details -->
+        <div class="col-lg-4 col-md-6 mb-4">
+          <mat-card class="content-poster h-100">
+            <img
+              mat-card-image
+              [src]="contentItem.thumbnailUrl"
+              [alt]="contentItem.title"
+              class="poster-image">
+          </mat-card>
+        </div>
+
+        <div class="col-lg-8 col-md-6">
+          <div class="content-info">
+            <h1 class="display-5 fw-bold mb-3">{{ contentItem.title }}</h1>
+
+            <div class="content-meta mb-4">
+              <div class="d-flex align-items-center flex-wrap gap-3 mb-3">
+                <span class="badge bg-primary fs-6">{{ contentItem.contentType.name }}</span>
+                <span class="text-muted">{{ contentItem.releaseDate | date:'yyyy' }}</span>
+                <span class="text-muted">{{ contentItem.duration }} min</span>
+              </div>
+
+              <!-- Genres -->
+              <div class="genres mb-3">
+                <mat-chip-set>
+                  @for (genre of contentItem.genres; track genre.id) {
+                    <mat-chip class="genre-chip">{{ genre.name }}</mat-chip>
+                  }
+                </mat-chip-set>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="description mb-4">
+              <h5 class="fw-bold mb-2">Overview</h5>
+              <p class="lead">{{ contentItem.description }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions d-flex gap-3 flex-wrap">
+              <button mat-raised-button color="primary" class="play-button">
+                <mat-icon>play_arrow</mat-icon>
+                Watch Now
+              </button>
+              <button mat-raised-button color="accent" (click)="addToMyList()">
+                <mat-icon>playlist_add</mat-icon>
+                Add to My List
+              </button>
+            </div>
+
+            <!-- Additional Details -->
+            @if (contentItem.language) {
+              <div class="additional-info mt-4">
+                <h6 class="fw-bold mb-2">Additional Information</h6>
+                <div class="row">
+                  <div class="col-sm-6 mb-2">
+                    <strong>Language:</strong> {{ contentItem.language }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="d-flex flex-column justify-content-center align-items-center p-5 text-center">
+        <mat-icon class="text-muted mb-3" style="font-size: 64px; width: 64px; height: 64px;">error</mat-icon>
+        <h4 class="text-muted mb-2">Content Not Found</h4>
+        <p class="text-muted mb-3">The requested content could not be found or does not exist.</p>
+        <button mat-raised-button color="primary" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Go Back
+        </button>
+      </div>
+    }
+  }
+</div>

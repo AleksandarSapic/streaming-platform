@@ -7,7 +7,8 @@
   [totalPages]="totalPages()"
   (previousPage)="previousPage()"
   (nextPage)="nextPage()"
-  (addToList)="addToMyList($event)">
+  (addToList)="addToMyList($event)"
+  (moreInfo)="navigateToContentDetail($event)">
 </app-content-section>
 
 <!-- Recent Content Section -->
@@ -19,5 +20,6 @@
   [totalPages]="recentTotalPages()"
   (previousPage)="previousRecentPage()"
   (nextPage)="nextRecentPage()"
-  (addToList)="addToMyList($event)">
+  (addToList)="addToMyList($event)"
+  (moreInfo)="navigateToContentDetail($event)">
 </app-content-section>
