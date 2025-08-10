@@ -1,45 +1,74 @@
-<mat-toolbar class="d-flex justify-content-between p-5 shadow">
-  <span class="navbar-brand" [routerLink]="['/browse']">StreamPlatform</span>
+<mat-toolbar class="d-flex justify-content-between align-items-center p-3 p-md-4 p-lg-5 shadow">
+  <div class="d-flex align-items-center">
+    <span class="navbar-brand" [routerLink]="['/browse']">
+      <span class="d-none d-sm-inline">StreamPlatform</span>
+      <span class="d-inline d-sm-none">Stream</span>
+    </span>
+  </div>
 
-  <div>
+  <div class="d-none d-lg-block">
     <nav class="navbar navbar-expand-lg navbar-light">
       <ul class="navbar-nav">
         <li class="nav-item">
           <a [routerLink]="['/browse']"
              [routerLinkActive]="['active', 'border-bottom', 'border-3']"
-             class="nav-link rounded">Home</a>
+             class="nav-link rounded px-3">Home</a>
         </li>
         <li class="nav-item">
           <a [routerLink]="['/movies']"
              [routerLinkActive]="['active', 'border-bottom', 'border-3']"
-             class="nav-link rounded">Movies</a>
+             class="nav-link rounded px-3">Movies</a>
         </li>
         <li class="nav-item">
           <a [routerLink]="['/series']"
              [routerLinkActive]="['active', 'border-bottom', 'border-3']"
-             class="nav-link rounded">Shows</a>
+             class="nav-link rounded px-3">Shows</a>
         </li>
         <li class="nav-item">
           <a [routerLink]="['/my-list']"
              [routerLinkActive]="['active', 'border-bottom', 'border-3']"
-             class="nav-link rounded">My List</a>
+             class="nav-link rounded px-3">My List</a>
         </li>
       </ul>
     </nav>
   </div>
 
-  <div class="d-flex align-items-center gap-2">
-    <button mat-icon-button (click)="navigateToSearch()">
-      <mat-icon matPrefix>search</mat-icon>
+  <div class="d-flex align-items-center gap-1 gap-md-2">
+    <button mat-icon-button (click)="navigateToSearch()" class="d-flex">
+      <mat-icon>search</mat-icon>
     </button>
 
-    <button mat-icon-button [matMenuTriggerFor]="profileMenu">
+    <button mat-icon-button [matMenuTriggerFor]="mobileMenu" class="d-lg-none">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="d-flex">
       <mat-icon>account_circle</mat-icon>
     </button>
 
+    <mat-menu #mobileMenu="matMenu" class="d-lg-none">
+      <a mat-menu-item [routerLink]="['/browse']">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      <a mat-menu-item [routerLink]="['/movies']">
+        <mat-icon>movie</mat-icon>
+        <span>Movies</span>
+      </a>
+      <a mat-menu-item [routerLink]="['/series']">
+        <mat-icon>tv</mat-icon>
+        <span>Shows</span>
+      </a>
+      <a mat-menu-item [routerLink]="['/my-list']">
+        <mat-icon>playlist_play</mat-icon>
+        <span>My List</span>
+      </a>
+    </mat-menu>
+
     <mat-menu #profileMenu="matMenu">
       <div class="px-3 py-2 text-center fw-bold">
-        {{ currentUser()?.fullName }}
+        <span class="d-none d-sm-inline">{{ currentUser()?.fullName }}</span>
+        <span class="d-inline d-sm-none">Profile</span>
       </div>
       <mat-divider></mat-divider>
       <a mat-menu-item [routerLink]="['/account']">
