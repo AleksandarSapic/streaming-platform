@@ -44,4 +44,8 @@ export class Header implements OnInit {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+
+  navigateToSearch() {
+    this.router.navigate(['/search']);
+  }
 }

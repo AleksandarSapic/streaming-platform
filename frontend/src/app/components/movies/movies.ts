@@ -112,10 +112,7 @@ export class Movies implements OnInit {
     this.actionIsLoading.set(true);
     this.contentService.getContentByGenre('Action', page, 6).subscribe({
       next: (response: ContentPage) => {
-        const movies = response.content.filter(content =>
-          content.contentType.name.toLowerCase() === 'movie'
-        );
-        this.actionMovies.set(movies);
+        this.actionMovies.set(response.content);
         this.actionCurrentPage.set(response.number);
         this.actionTotalPages.set(response.totalPages);
         this.actionIsLoading.set(false);
@@ -145,10 +142,7 @@ export class Movies implements OnInit {
     this.dramaIsLoading.set(true);
     this.contentService.getContentByGenre('Drama', page, 6).subscribe({
       next: (response: ContentPage) => {
-        const movies = response.content.filter(content =>
-          content.contentType.name.toLowerCase() === 'movie'
-        );
-        this.dramaMovies.set(movies);
+        this.dramaMovies.set(response.content);
         this.dramaCurrentPage.set(response.number);
         this.dramaTotalPages.set(response.totalPages);
         this.dramaIsLoading.set(false);
@@ -178,10 +172,7 @@ export class Movies implements OnInit {
     this.filteredIsLoading.set(true);
     this.contentService.getContentByGenre(genreName, page, 6).subscribe({
       next: (response: ContentPage) => {
-        const movies = response.content.filter(content =>
-          content.contentType.name.toLowerCase() === 'movie'
-        );
-        this.filteredContent.set(movies);
+        this.filteredContent.set(response.content);
         this.filteredCurrentPage.set(response.number);
         this.filteredTotalPages.set(response.totalPages);
         this.filteredIsLoading.set(false);

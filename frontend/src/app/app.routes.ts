@@ -29,7 +29,7 @@ export const routes: Routes = [
   },
   {
     path: 'series',
-    loadComponent: () => import('./components/browse/browse').then(c => c.Browse),
+    loadComponent: () => import('./components/movies/movies').then(c => c.Movies),
     canActivate: [authGuard]
   },
   {
@@ -40,6 +40,11 @@ export const routes: Routes = [
   {
     path: 'account',
     loadComponent: () => import('./components/account-profile/account-profile').then(c => c.AccountProfile),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'search',
+    loadComponent: () => import('./components/search/search').then(c => c.Search),
     canActivate: [authGuard]
   },
   {

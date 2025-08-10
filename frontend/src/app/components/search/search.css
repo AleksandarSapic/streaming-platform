@@ -1,0 +1,45 @@
+.search-container {
+  margin-bottom: 2rem;
+}
+
+.search-field {
+  max-width: 600px;
+  font-size: 1.1rem;
+}
+
+.search-input {
+  font-size: 1.1rem;
+  padding: 1rem 0;
+}
+
+.search-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+}
+
+.welcome-message {
+  padding: 3rem 1rem;
+  background: rgba(33, 150, 243, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(33, 150, 243, 0.1);
+}
+
+@media (max-width: 768px) {
+  .search-field {
+    font-size: 1rem;
+  }
+  
+  .search-input {
+    font-size: 1rem;
+    padding: 0.8rem 0;
+  }
+  
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .welcome-message {
+    padding: 2rem 1rem;
+  }
+}
