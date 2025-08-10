@@ -1,5 +1,4 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -16,6 +15,7 @@ import {ContentService} from '../../services/content.service';
 import {WatchlistService} from '../../services/watchlist.service';
 import {GenreService} from '../../services/genre.service';
 import {ContentSection} from '../content-section/content-section';
+import {Header} from '../header/header';
 import {Content, ContentPage, Genre} from '../../interfaces/content.interface';
 
 @Component({
@@ -33,8 +33,7 @@ import {Content, ContentPage, Genre} from '../../interfaces/content.interface';
     MatSnackBarModule,
     MatChipsModule,
     ContentSection,
-    RouterLink,
-    RouterLinkActive,
+    Header
   ],
   templateUrl: './movies.html',
   styleUrl: './movies.css'
@@ -61,12 +60,12 @@ export class Movies implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private contentService: ContentService,
     private watchlistService: WatchlistService,
     private genreService: GenreService,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.loadGenres();
@@ -142,14 +141,6 @@ export class Movies implements OnInit {
     }
   }
 
-  canGoNextAction(): boolean {
-    return this.actionCurrentPage() < this.actionTotalPages() - 1;
-  }
-
-  canGoPreviousAction(): boolean {
-    return this.actionCurrentPage() > 0;
-  }
-
   loadDramaMovies(page: number = 0) {
     this.dramaIsLoading.set(true);
     this.contentService.getContentByGenre('Drama', page, 6).subscribe({
@@ -181,14 +172,6 @@ export class Movies implements OnInit {
       const prevPage = this.dramaCurrentPage() - 1;
       this.loadDramaMovies(prevPage);
     }
-  }
-
-  canGoNextDrama(): boolean {
-    return this.dramaCurrentPage() < this.dramaTotalPages() - 1;
-  }
-
-  canGoPreviousDrama(): boolean {
-    return this.dramaCurrentPage() > 0;
   }
 
   loadFilteredContent(genreName: string, page: number = 0) {
@@ -230,14 +213,6 @@ export class Movies implements OnInit {
     }
   }
 
-  canGoNextFiltered(): boolean {
-    return this.filteredCurrentPage() < this.filteredTotalPages() - 1;
-  }
-
-  canGoPreviousFiltered(): boolean {
-    return this.filteredCurrentPage() > 0;
-  }
-
   isAllMoviesSelected(): boolean {
     return this.selectedGenre() === null || this.selectedGenre() === '';
   }
@@ -269,10 +244,5 @@ export class Movies implements OnInit {
         });
       }
     });
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }

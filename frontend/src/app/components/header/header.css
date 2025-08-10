@@ -1,0 +1,28 @@
+/* Header component styles */
+.navbar-brand {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.navbar-brand:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-link {
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  background-color: rgba(33, 150, 243, 0.1);
+  border-radius: 4px;
+}

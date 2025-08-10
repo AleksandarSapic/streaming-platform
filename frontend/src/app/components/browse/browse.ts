@@ -14,6 +14,7 @@ import {AuthService} from '../../services/auth.service';
 import {ContentService} from '../../services/content.service';
 import {WatchlistService} from '../../services/watchlist.service';
 import {ContentSection} from '../content-section/content-section';
+import {Header} from '../header/header';
 import {Content, ContentPage} from '../../interfaces/content.interface';
 
 @Component({
@@ -30,8 +31,7 @@ import {Content, ContentPage} from '../../interfaces/content.interface';
     MatCardModule,
     MatSnackBarModule,
     ContentSection,
-    RouterLink,
-    RouterLinkActive,
+    Header,
   ],
   templateUrl: './browse.html',
   styleUrl: './browse.css'
@@ -49,7 +49,6 @@ export class Browse implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private contentService: ContentService,
     private watchlistService: WatchlistService,
     private snackBar: MatSnackBar
@@ -95,14 +94,6 @@ export class Browse implements OnInit {
     }
   }
 
-  canGoNext(): boolean {
-    return this.currentPage() < this.totalPages() - 1;
-  }
-
-  canGoPrevious(): boolean {
-    return this.currentPage() > 0;
-  }
-
   loadRecentContent(page: number = 0) {
     this.recentIsLoading.set(true);
     this.contentService.getRecentContent(page, 6).subscribe({
@@ -133,14 +124,6 @@ export class Browse implements OnInit {
     }
   }
 
-  canGoNextRecent(): boolean {
-    return this.recentCurrentPage() < this.recentTotalPages() - 1;
-  }
-
-  canGoPreviousRecent(): boolean {
-    return this.recentCurrentPage() > 0;
-  }
-
   addToMyList(contentId: string) {
     const currentUser = this.currentUser();
     if (!currentUser?.id) {
@@ -168,10 +151,5 @@ export class Browse implements OnInit {
         });
       }
     });
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }
