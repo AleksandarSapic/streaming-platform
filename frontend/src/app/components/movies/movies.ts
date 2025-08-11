@@ -240,4 +240,8 @@ export class Movies implements OnInit {
   navigateToContentDetail(contentId: string) {
     this.router.navigate(['/content', contentId]);
   }
+
+  playContent(contentId: string) {
+    this.router.navigate(['/watch', contentId]);
+  }
 }

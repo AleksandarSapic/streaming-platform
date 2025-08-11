@@ -110,6 +110,10 @@ export class UserList implements OnInit {
     this.router.navigate(['/content', contentId]);
   }
 
+  playContent(contentId: string) {
+    this.router.navigate(['/watch', contentId]);
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

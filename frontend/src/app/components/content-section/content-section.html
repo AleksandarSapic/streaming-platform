@@ -83,7 +83,7 @@
                 <p class="card-text small text-truncate">{{ item.description }}</p>
               </mat-card-content>
               <mat-card-actions class="p-3 pt-0">
-                <button mat-raised-button color="primary" class="w-100">
+                <button mat-raised-button color="primary" class="w-100" (click)="onPlayContent(item.id)">
                   <mat-icon class="me-1">play_arrow</mat-icon>
                   Watch Now
                 </button>

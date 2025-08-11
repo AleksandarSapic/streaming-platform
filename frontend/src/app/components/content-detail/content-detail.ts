@@ -1,5 +1,5 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule, Location} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
@@ -31,6 +31,7 @@ export class ContentDetail implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private location: Location,
     private contentService: ContentService,
     private watchlistService: WatchlistService,
@@ -103,5 +104,12 @@ export class ContentDetail implements OnInit {
 
   goBack() {
     this.location.back();
+  }
+
+  playContent() {
+    const contentId = this.contentId();
+    if (contentId) {
+      this.router.navigate(['/watch', contentId]);
+    }
   }
 }
