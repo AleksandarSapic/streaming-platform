@@ -1,0 +1,142 @@
+<div class="container-fluid py-4">
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center p-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    @if (content(); as showItem) {
+      <div class="row">
+        <!-- Back Button -->
+        <div class="col-12 mb-3">
+          <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+
+        <!-- Show Details -->
+        <div class="col-lg-4 col-md-6 mb-4">
+          <mat-card class="content-poster h-100">
+            <img
+              mat-card-image
+              [src]="showItem.thumbnailUrl"
+              [alt]="showItem.title"
+              class="poster-image">
+          </mat-card>
+        </div>
+
+        <div class="col-lg-8 col-md-6">
+          <div class="content-info">
+            <h1 class="display-5 fw-bold mb-3">{{ showItem.title }}</h1>
+
+            <div class="content-meta mb-4">
+              <div class="d-flex align-items-center flex-wrap gap-3 mb-3">
+                <span class="badge bg-primary fs-6">{{ showItem.contentType.name }}</span>
+                <span class="text-muted">{{ showItem.releaseDate | date:'yyyy' }}</span>
+                @if (getTotalSeasons() > 0) {
+                  <span class="text-muted">{{ getTotalSeasons() }} Season{{ getTotalSeasons() > 1 ? 's' : '' }}</span>
+                }
+                @if (showItem.episodeCount) {
+                  <span class="text-muted">{{ showItem.episodeCount }} Episodes</span>
+                }
+              </div>
+
+              <!-- Genres -->
+              <div class="genres mb-3">
+                <mat-chip-set>
+                  @for (genre of showItem.genres; track genre.id) {
+                    <mat-chip class="genre-chip">{{ genre.name }}</mat-chip>
+                  }
+                </mat-chip-set>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="description mb-4">
+              <h5 class="fw-bold mb-2">Overview</h5>
+              <p class="lead">{{ showItem.description }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions d-flex gap-3 flex-wrap">
+              <button mat-raised-button color="primary" class="play-button" (click)="watchSeason1Episode1()">
+                <mat-icon>play_arrow</mat-icon>
+                Watch Season 1 Episode 1
+              </button>
+              <button mat-raised-button color="accent" (click)="addToMyList()">
+                <mat-icon>playlist_add</mat-icon>
+                Add to My List
+              </button>
+            </div>
+
+            <!-- Additional Details -->
+            @if (showItem.language) {
+              <div class="additional-info mt-4">
+                <h6 class="fw-bold mb-2">Additional Information</h6>
+                <div class="row">
+                  <div class="col-sm-6 mb-2">
+                    <strong>Language:</strong> {{ showItem.language }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Episodes Section -->
+      @if (seasons().length > 0) {
+        <div class="row">
+          <div class="col-12">
+            <div class="episodes-section px-3">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">Episodes</h3>
+
+                <!-- Season Selector -->
+                <mat-form-field appearance="outline" class="season-selector">
+                  <mat-label>Season</mat-label>
+                  <mat-select
+                    [value]="selectedSeason()"
+                    (selectionChange)="onSeasonChange($event.value)">
+                    @for (season of seasons(); track $index) {
+                      <mat-option [value]="season">
+                        Season {{ season }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <!-- Episode Content Section -->
+              @if (episodePage(); as episodePageData) {
+                <app-content-section
+                  title=""
+                  [content]="episodes()"
+                  [isLoading]="isLoadingEpisodes()"
+                  [currentPage]="currentPage()"
+                  [totalPages]="episodePageData.totalPages"
+                  [isEpisodeView]="true"
+                  (previousPage)="onEpisodePreviousPage()"
+                  (nextPage)="onEpisodeNextPage()"
+                  (moreInfo)="onEpisodeMoreInfo($event)"
+                  (playContent)="onEpisodePlay($event)">
+                </app-content-section>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="d-flex flex-column justify-content-center align-items-center p-5 text-center">
+        <mat-icon class="text-muted mb-3" style="font-size: 64px; width: 64px; height: 64px;">error</mat-icon>
+        <h4 class="text-muted mb-2">Show Not Found</h4>
+        <p class="text-muted mb-3">The requested show could not be found or does not exist.</p>
+        <button mat-raised-button color="primary" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Go Back
+        </button>
+      </div>
+    }
+  }
+</div>

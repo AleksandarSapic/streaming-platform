@@ -85,14 +85,95 @@
       }
     </div>
   } @else {
-    <div class="error-container d-flex flex-column justify-content-center align-items-center text-center p-5">
-      <mat-icon class="error-icon text-muted mb-3">error</mat-icon>
-      <h4 class="text-muted mb-3">Content Not Found</h4>
-      <p class="text-muted mb-4">The requested content could not be loaded.</p>
-      <button mat-raised-button color="primary" (click)="goBack()">
-        <mat-icon class="me-2">arrow_back</mat-icon>
-        Go Back
-      </button>
-    </div>
+    @if (episode(); as videoEpisode) {
+      <div class="video-player-container">
+        <!-- Video Player Controls Bar -->
+        <div class="player-controls bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-3">
+            <button mat-icon-button (click)="goBack()" class="text-white">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div class="d-flex align-items-center video-info gap-3">
+              <h5 class="mb-0">{{ videoEpisode.title }}</h5>
+              <small>{{ videoEpisode.contentTitle }} • S{{ videoEpisode.seasonNumber }}E{{ videoEpisode.episodeNumber }} • {{ videoEpisode.releaseDate | date:'yyyy' }}</small>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button mat-icon-button (click)="goToDetails()" class="text-white" title="View Details">
+              <mat-icon>info_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Video Element -->
+        <div class="video-wrapper">
+          @if (videoEpisode.videoUrl) {
+            <video
+              controls
+              autoplay
+              class="video-element"
+              [poster]="videoEpisode.thumbnailUrl"
+              preload="metadata">
+            <source [src]="videoEpisode.videoUrl" type="video/mp4">
+              <p class="text-center text-muted p-4">
+                Your browser does not support the video tag.
+                <a [href]="videoEpisode.videoUrl" target="_blank" class="text-primary">Download the video</a> instead.
+              </p>
+            </video>
+          } @else {
+            <div class="no-video-container d-flex flex-column justify-content-center align-items-center text-center p-5">
+              <mat-icon class="no-video-icon text-muted mb-3">videocam_off</mat-icon>
+              <h4 class="text-muted mb-3">Video Not Available</h4>
+              <p class="text-muted mb-4">This episode doesn't have a video stream available at the moment.</p>
+              <div class="d-flex gap-3">
+                <button mat-raised-button color="primary" (click)="goToDetails()">
+                  <mat-icon class="me-2">info</mat-icon>
+                  View Details
+                </button>
+                <button mat-stroked-button (click)="goBack()">
+                  <mat-icon class="me-2">arrow_back</mat-icon>
+                  Go Back
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Episode Info Bar -->
+        @if (videoEpisode.videoUrl) {
+          <div class="content-info-bar bg-dark text-white p-3">
+            <div class="container-fluid">
+              <div class="row d-flex align-items-center">
+                <div class="col-md-8">
+                  <h6 class="mb-2">{{ videoEpisode.title }}</h6>
+                  <p class="mb-2 text-truncate">{{ videoEpisode.description }}</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary">Season {{ videoEpisode.seasonNumber }}</span>
+                    <span class="badge bg-secondary">Episode {{ videoEpisode.episodeNumber }}</span>
+                    <span class="badge bg-secondary">{{ videoEpisode.duration }}</span>
+                  </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                  <button mat-raised-button color="accent" (click)="goToDetails()" class="w-100 w-md-auto">
+                    <mat-icon class="me-2">info</mat-icon>
+                    More Info
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="error-container d-flex flex-column justify-content-center align-items-center text-center p-5">
+        <mat-icon class="error-icon text-muted mb-3">error</mat-icon>
+        <h4 class="text-muted mb-3">Content Not Found</h4>
+        <p class="text-muted mb-4">The requested content could not be loaded.</p>
+        <button mat-raised-button color="primary" (click)="goBack()">
+          <mat-icon class="me-2">arrow_back</mat-icon>
+          Go Back
+        </button>
+      </div>
+    }
   }
 }

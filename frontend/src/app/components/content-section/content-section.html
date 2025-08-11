@@ -73,14 +73,23 @@
                 [alt]="item.title"
                 class="content-thumbnail">
               <mat-card-content class="p-3">
-                <h6 class="card-title fw-bold mb-2">{{ item.title }}</h6>
-                <p class="text-muted small mb-2">{{ item.contentType.name }} • {{ item.releaseDate | date:'yyyy' }}</p>
-                <div class="d-flex flex-wrap gap-1 mb-2">
-                  @for (genre of item.genres; track genre.id) {
-                    <span class="badge bg-secondary small">{{ genre.name }}</span>
+                @if (isEpisode(item)) {
+                  <h6 class="card-title fw-bold mb-2">{{ asEpisode(item).title }}</h6>
+                  <p class="text-muted small mb-2">S{{ asEpisode(item).seasonNumber }}E{{ asEpisode(item).episodeNumber }} • {{ asEpisode(item).releaseDate | date:'MMM dd, yyyy' }}</p>
+                  @if (asEpisode(item).duration) {
+                    <p class="text-muted small mb-2">{{ asEpisode(item).duration }} min</p>
                   }
-                </div>
-                <p class="card-text small text-truncate">{{ item.description }}</p>
+                  <p class="card-text small text-truncate">{{ asEpisode(item).description }}</p>
+                } @else {
+                  <h6 class="card-title fw-bold mb-2">{{ asContent(item).title }}</h6>
+                  <p class="text-muted small mb-2">{{ asContent(item).contentType.name }} • {{ asContent(item).releaseDate | date:'yyyy' }}</p>
+                  <div class="d-flex flex-wrap gap-1 mb-2">
+                    @for (genre of asContent(item).genres; track genre.id) {
+                      <span class="badge bg-secondary small">{{ genre.name }}</span>
+                    }
+                  </div>
+                  <p class="card-text small text-truncate">{{ asContent(item).description }}</p>
+                }
               </mat-card-content>
               <mat-card-actions class="p-3 pt-0">
                 <button mat-raised-button color="primary" class="w-100" (click)="onPlayContent(item.id)">
