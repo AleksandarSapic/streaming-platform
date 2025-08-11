@@ -29,7 +29,7 @@ export const routes: Routes = [
   },
   {
     path: 'series',
-    loadComponent: () => import('./components/movies/movies').then(c => c.Movies),
+    loadComponent: () => import('./components/series/series').then(c => c.Series),
     canActivate: [authGuard]
   },
   {

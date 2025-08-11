@@ -19,7 +19,7 @@ import {ContentSection} from '../content-section/content-section';
 import {Content, ContentPage, Genre} from '../../interfaces/content.interface';
 
 @Component({
-  selector: 'app-movies',
+  selector: 'app-series',
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -34,19 +34,19 @@ import {Content, ContentPage, Genre} from '../../interfaces/content.interface';
     MatChipsModule,
     ContentSection,
   ],
-  templateUrl: './movies.html',
-  styleUrl: './movies.css'
+  templateUrl: './series.html',
+  styleUrl: './series.css'
 })
-export class Movies implements OnInit {
+export class Series implements OnInit {
   genres = signal<Genre[]>([]);
   selectedGenre = signal<string | null>(null);
 
-  actionMovies = signal<Content[]>([]);
+  actionSeries = signal<Content[]>([]);
   actionCurrentPage = signal<number>(0);
   actionTotalPages = signal<number>(0);
   actionIsLoading = signal<boolean>(false);
 
-  dramaMovies = signal<Content[]>([]);
+  dramaSeries = signal<Content[]>([]);
   dramaCurrentPage = signal<number>(0);
   dramaTotalPages = signal<number>(0);
   dramaIsLoading = signal<boolean>(false);
@@ -69,8 +69,8 @@ export class Movies implements OnInit {
 
   ngOnInit() {
     this.loadGenres();
-    this.loadActionMovies();
-    this.loadDramaMovies();
+    this.loadActionSeries();
+    this.loadDramaSeries();
   }
 
   get currentUser() {
@@ -108,17 +108,17 @@ export class Movies implements OnInit {
     }
   }
 
-  loadActionMovies(page: number = 0) {
+  loadActionSeries(page: number = 0) {
     this.actionIsLoading.set(true);
-    this.contentService.getContentByTypeAndGenre('Movie', 'Action', page, 6).subscribe({
+    this.contentService.getContentByTypeAndGenre('TV Show', 'Action', page, 6).subscribe({
       next: (response: ContentPage) => {
-        this.actionMovies.set(response.content);
+        this.actionSeries.set(response.content);
         this.actionCurrentPage.set(response.number);
         this.actionTotalPages.set(response.totalPages);
         this.actionIsLoading.set(false);
       },
       error: (error) => {
-        console.error('Error loading action movies:', error);
+        console.error('Error loading action series:', error);
         this.actionIsLoading.set(false);
       }
     });
@@ -127,28 +127,28 @@ export class Movies implements OnInit {
   nextActionPage() {
     if (this.actionCurrentPage() < this.actionTotalPages() - 1) {
       const nextPage = this.actionCurrentPage() + 1;
-      this.loadActionMovies(nextPage);
+      this.loadActionSeries(nextPage);
     }
   }
 
   previousActionPage() {
     if (this.actionCurrentPage() > 0) {
       const prevPage = this.actionCurrentPage() - 1;
-      this.loadActionMovies(prevPage);
+      this.loadActionSeries(prevPage);
     }
   }
 
-  loadDramaMovies(page: number = 0) {
+  loadDramaSeries(page: number = 0) {
     this.dramaIsLoading.set(true);
-    this.contentService.getContentByTypeAndGenre('Movie', 'Drama', page, 6).subscribe({
+    this.contentService.getContentByTypeAndGenre('TV Show', 'Drama', page, 6).subscribe({
       next: (response: ContentPage) => {
-        this.dramaMovies.set(response.content);
+        this.dramaSeries.set(response.content);
         this.dramaCurrentPage.set(response.number);
         this.dramaTotalPages.set(response.totalPages);
         this.dramaIsLoading.set(false);
       },
       error: (error) => {
-        console.error('Error loading drama movies:', error);
+        console.error('Error loading drama series:', error);
         this.dramaIsLoading.set(false);
       }
     });
@@ -157,20 +157,20 @@ export class Movies implements OnInit {
   nextDramaPage() {
     if (this.dramaCurrentPage() < this.dramaTotalPages() - 1) {
       const nextPage = this.dramaCurrentPage() + 1;
-      this.loadDramaMovies(nextPage);
+      this.loadDramaSeries(nextPage);
     }
   }
 
   previousDramaPage() {
     if (this.dramaCurrentPage() > 0) {
       const prevPage = this.dramaCurrentPage() - 1;
-      this.loadDramaMovies(prevPage);
+      this.loadDramaSeries(prevPage);
     }
   }
 
   loadFilteredContent(genreName: string, page: number = 0) {
     this.filteredIsLoading.set(true);
-    this.contentService.getContentByTypeAndGenre('Movie', genreName.toLowerCase(), page, 6).subscribe({
+    this.contentService.getContentByTypeAndGenre('TV Show', genreName.toLowerCase(), page, 6).subscribe({
       next: (response: ContentPage) => {
         this.filteredContent.set(response.content);
         this.filteredCurrentPage.set(response.number);
@@ -204,7 +204,7 @@ export class Movies implements OnInit {
     }
   }
 
-  isAllMoviesSelected(): boolean {
+  isAllSeriesSelected(): boolean {
     return this.selectedGenre() === null || this.selectedGenre() === '';
   }
 
@@ -220,15 +220,15 @@ export class Movies implements OnInit {
 
     this.watchlistService.addToWatchlist(currentUser.id, contentId).subscribe({
       next: () => {
-        this.snackBar.open('Movie added to your list successfully!', 'Close', {
+        this.snackBar.open('Series added to your list successfully!', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
       },
       error: (error) => {
-        console.error('Error adding movie to watchlist:', error);
+        console.error('Error adding series to watchlist:', error);
 
-        const errorMessage = error.error?.message || 'Failed to add movie to your list. Please try again.';
+        const errorMessage = error.error?.message || 'Failed to add series to your list. Please try again.';
         this.snackBar.open(errorMessage, 'Close', {
           duration: 5000,
           panelClass: ['error-snackbar']

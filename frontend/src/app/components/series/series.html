@@ -1,0 +1,66 @@
+<!-- Genre Filter Section -->
+<div class="d-flex flex-wrap gap-2 container-fluid py-4">
+  <mat-chip-set>
+    <mat-chip
+      (click)="onGenreSelected(null)"
+      [class.selected]="selectedGenre() === null"
+      class="genre-chip">
+      All Series
+    </mat-chip>
+    @for (genre of genres(); track genre.id) {
+      <mat-chip
+        (click)="onGenreSelected(genre.id)"
+        [class.selected]="selectedGenre() === genre.id"
+        class="genre-chip">
+        {{ genre.name }}
+      </mat-chip>
+    }
+  </mat-chip-set>
+</div>
+
+<!-- Conditional Content Display -->
+@if (isAllSeriesSelected()) {
+  <!-- Show Action and Drama sections when All Series is selected -->
+
+    <!-- Action Series Section -->
+  <app-content-section
+    title="Action Series"
+    [content]="actionSeries()"
+    [isLoading]="actionIsLoading()"
+    [currentPage]="actionCurrentPage()"
+    [totalPages]="actionTotalPages()"
+    (previousPage)="previousActionPage()"
+    (nextPage)="nextActionPage()"
+    (addToList)="addToMyList($event)"
+    (moreInfo)="navigateToContentDetail($event)"
+    (playContent)="playContent($event)">
+  </app-content-section>
+
+  <!-- Drama Series Section -->
+  <app-content-section
+    title="Drama Series"
+    [content]="dramaSeries()"
+    [isLoading]="dramaIsLoading()"
+    [currentPage]="dramaCurrentPage()"
+    [totalPages]="dramaTotalPages()"
+    (previousPage)="previousDramaPage()"
+    (nextPage)="nextDramaPage()"
+    (addToList)="addToMyList($event)"
+    (moreInfo)="navigateToContentDetail($event)"
+    (playContent)="playContent($event)">
+  </app-content-section>
+} @else {
+  <!-- Show filtered content section when specific genre is selected -->
+  <app-content-section
+    [title]="selectedGenreName() + ' Series'"
+    [content]="filteredContent()"
+    [isLoading]="filteredIsLoading()"
+    [currentPage]="filteredCurrentPage()"
+    [totalPages]="filteredTotalPages()"
+    (previousPage)="previousFilteredPage()"
+    (nextPage)="nextFilteredPage()"
+    (addToList)="addToMyList($event)"
+    (moreInfo)="navigateToContentDetail($event)"
+    (playContent)="playContent($event)">
+  </app-content-section>
+}

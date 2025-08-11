@@ -65,4 +65,20 @@ export class ContentService {
     
     return this.http.get<ContentPage>(`${this.API_BASE_URL}/by-genre`, { params });
   }
+
+  getContentByTypeAndGenre(type?: string, genre?: string, page: number = 0, size: number = 10): Observable<ContentPage> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    if (type) {
+      params = params.set('by-type', type);
+    }
+    
+    if (genre) {
+      params = params.set('by-genre', genre);
+    }
+    
+    return this.http.get<ContentPage>(`${this.API_BASE_URL}/filter`, { params });
+  }
 }

@@ -34,7 +34,9 @@
               <div class="d-flex align-items-center flex-wrap gap-3 mb-3">
                 <span class="badge bg-primary fs-6">{{ contentItem.contentType.name }}</span>
                 <span class="text-muted">{{ contentItem.releaseDate | date:'yyyy' }}</span>
-                <span class="text-muted">{{ contentItem.duration }} min</span>
+                @if (contentItem.duration) {
+                  <span class="text-muted">{{ contentItem.duration }} min</span>
+                }
               </div>
 
               <!-- Genres -->
