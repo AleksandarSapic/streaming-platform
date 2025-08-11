@@ -146,4 +146,13 @@ public class ContentController {
         Page<ContentDto> recommendations = contentService.getContentRecommendations(userId, pageable);
         return ResponseEntity.ok(recommendations);
     }
+    
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ContentDto>> filterContent(
+            @RequestParam(value = "by-type", required = false) String byType,
+            @RequestParam(value = "by-genre", required = false) String byGenre,
+            Pageable pageable) {
+        Page<ContentDto> content = contentService.filterContent(byType, byGenre, pageable);
+        return ResponseEntity.ok(content);
+    }
 }

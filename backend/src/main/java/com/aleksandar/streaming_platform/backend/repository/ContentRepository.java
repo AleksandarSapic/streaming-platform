@@ -38,4 +38,11 @@ public interface ContentRepository extends JpaRepository<Content, UUID> {
     
     @Query("SELECT COUNT(c) FROM Content c WHERE c.contentType.id = :contentTypeId")
     Long countByContentTypeId(@Param("contentTypeId") UUID contentTypeId);
+    
+    @Query("SELECT DISTINCT c FROM Content c JOIN c.contentGenres cg " +
+            "WHERE (:typeName IS NULL OR LOWER(c.contentType.name) = LOWER(:typeName)) " +
+            "AND (:genreName IS NULL OR LOWER(cg.genre.name) = LOWER(:genreName))")
+    Page<Content> findByTypeAndGenre(@Param("typeName") String typeName, 
+                                    @Param("genreName") String genreName, 
+                                    Pageable pageable);
 }

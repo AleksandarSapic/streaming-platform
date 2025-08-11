@@ -249,4 +249,11 @@ public class ContentServiceImpl implements ContentService {
         Page<Content> contents = contentRepository.findAvailableContentOrderByReleaseDateDesc(pageable);
         return contents.map(dtoMapper::toContentDto);
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ContentDto> filterContent(String typeName, String genreName, Pageable pageable) {
+        Page<Content> contents = contentRepository.findByTypeAndGenre(typeName, genreName, pageable);
+        return contents.map(dtoMapper::toContentDto);
+    }
 }

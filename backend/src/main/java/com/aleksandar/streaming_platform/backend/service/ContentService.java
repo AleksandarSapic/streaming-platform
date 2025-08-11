@@ -50,4 +50,6 @@ public interface ContentService {
     Page<ContentDto> getPopularContent(Pageable pageable);
     
     Page<ContentDto> getContentRecommendations(UUID userId, Pageable pageable);
+    
+    Page<ContentDto> filterContent(String typeName, String genreName, Pageable pageable);
 }
