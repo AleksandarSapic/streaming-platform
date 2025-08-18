@@ -1,0 +1,52 @@
+# Target directory (build artifacts)
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot DevTools
+.spring-boot-devtools.properties
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Documentation (not needed in container)
+*.md
+docs/
+
+# Docker files (avoid recursive copying)
+Dockerfile*
+.dockerignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
