@@ -111,7 +111,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
-      - name: Build Docker images with docker-compose
+      - name: Build Docker images with docker compose
         run: docker compose build --parallel
         env:
           DOCKER_BUILDKIT: 1
@@ -125,7 +125,7 @@ jobs:
       - name: Test Docker containers startup
         run: |
           echo "Testing container startup..."
-          docker-compose up -d
+          docker compose up -d
           sleep 10
-          docker-compose ps
-          docker-compose down
+          docker compose ps
+          docker compose down
