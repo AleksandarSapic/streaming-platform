@@ -27,7 +27,6 @@ This project is built with a **Spring Boot backend** and an **Angular frontend**
 
 ### Frontend (UI)  
 - **Angular**  
-- **Bulma CSS**  
 - **Bootstrap (for extra UI elements)**  
 
 ### DevOps  
